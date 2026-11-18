@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineering Lecture Attendance</title>
+  <style>
+    :root { --primary: #1e3a8a; --accent: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+    .container { width: 100%; max-width: 500px; }
+    .header { text-align: center; margin-bottom: 18px; }
+    .header h1 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+    .clock { font-size: 0.9rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+    .card { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 16px; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-open { background: #dcfce7; color: #166534; }
+    .badge-closed { background: #fee2e2; color: #991b1b; }
+    .lecture-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 14px; border-radius: 8px; margin: 14px 0; }
+    .lecture-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 0 0 6px 0; }
+    .lecture-meta { font-size: 0.88rem; color: #334155; line-height: 1.5; }
+    label { display: block; margin-top: 12px; font-weight: 600; font-size: 0.88rem; color: #334155; }
+    input, button { width: 100%; padding: 12px; margin-top: 6px; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+    input { border: 1px solid #cbd5e1; }
+    input:focus { outline: none; border-color: var(--accent); }
+    button { background: var(--accent); color: white; border: none; font-weight: 600; margin-top: 18px; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    #statusMessage { margin-top: 14px; text-align: center; font-weight: 600; font-size: 0.92rem; }
+    .success { color: #15803d; }
+    .error { color: #b91c1c; }
+    .schedule-day { font-weight: 700; color: var(--primary); margin: 14px 0 6px 0; font-size: 0.95rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+    .schedule-item { font-size: 0.85rem; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; gap: 10px; }
+    .schedule-item:last-child { border-bottom: none; }
+    .time-col { font-weight: 700; color: #334155; min-width: 90px; }
+    .info-col { flex: 1; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Engineering Attendance Portal</h1>
+    <div class="clock" id="liveClock">Loading time...</div>
+  </div>
+
+  <!-- Active Attendance Card -->
+  <div class="card" id="mainCard">
+    <div id="statusBadge"></div>
+    <div id="activeContent"></div>
+  </div>
+
+  <!-- Weekly Timetable Reference -->
+  <div class="card">
+    <h3 style="margin:0 0 8px 0; font-size:1.05rem; color:#1e293b;">Weekly Lecture Timetable</h3>
+    <p style="margin:0 0 10px 0; font-size:0.8rem; color:#64748b;">Attendance opens 15 mins before start and closes 15 mins after end.</p>
+    <div id="timetableList"></div>
+  </div>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiINwPkR6gZnfiwRZzP-GnsoPtZJdYdd-fqdA9ighdMQXovN3UrZ2rxXDIv46WJNDd/exec";
+
+  // Timetable Data (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const TIMETABLE = [
+    // MONDAY
+    { dayNum: 1, dayName: "Monday", start: "08:00", end: "10:00", code: "MATH111", name: "ALGEBRA", venue: "ODURO BLOCK LF4", lecturer: "MRS. REBECCA NDUBA ARHIN", group: "Group B" },
+    { dayNum: 1, dayName: "Monday", start: "10:00", end: "12:00", code: "BEEE103", name: "ENGINEERING DRAWING I", venue: "ODURO BLOCK SF2", lecturer: "MR. KINGSLEY NUNOO", group: "Group B" },
+    { dayNum: 1, dayName: "Monday", start: "14:00", end: "16:00", code: "PCOS101", name: "COMMUNICATION SKILLS I", venue: "AUDITORIUM", lecturer: "FLORA OHENE ASANTE", group: "Group B" },
+    
+    // TUESDAY
+    { dayNum: 2, dayName: "Tuesday", start: "06:00", end: "08:00", code: "BEEE109", name: "ENGINEERING MECHANICS", venue: "ODURO BLOCK LF1", lecturer: "MR. CARIFA AMOUZOU", group: "Group B" },
+    { dayNum: 2, dayName: "Tuesday", start: "14:00", end: "16:00", code: "PCLT101", name: "COMPUTER LITERACY", venue: "AUDITORIUM", lecturer: "MISS ANGELA ABA OTCHERE", group: "Group B" },
+
+    // WEDNESDAY
+    { dayNum: 3, dayName: "Wednesday", start: "14:00", end: "16:00", code: "BEEE101", name: "ELECTRONICS I", venue: "ODURO BLOCK FF2", lecturer: "MR. ISAAC AYIPEH MENSAH", group: "Group B" },
+
+    // THURSDAY
+    { dayNum: 4, dayName: "Thursday", start: "08:00", end: "10:00", code: "PAS111", name: "AFRICAN STUDIES", venue: "AUDITORIUM", lecturer: "MR. PETER YANKSON", group: "Group A" },
+    { dayNum: 4, dayName: "Thursday", start: "10:00", end: "12:00", code: "BEEE107", name: "APPLIED ELECTRICITY", venue: "ODURO BLOCK TF2", lecturer: "MR. DACOSTA ASANTE", group: "Group B" }
+  ];
+
+  let currentActiveClassId = null;
+
+  function timeToMinutes(timeStr) {
+    const [h, m] = timeStr.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  function formatMinutesToTime(totalMins) {
+    const h = Math.floor(totalMins / 60);
+    const m = totalMins % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  function getActiveLecture(now) {
+    const currentDay = now.getDay();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    return TIMETABLE.find(cls => {
+      if (cls.dayNum !== currentDay) return false;
+      const openTime = timeToMinutes(cls.start) - 15;
+      const closeTime = timeToMinutes(cls.end) + 15;
+      return currentMinutes >= openTime && currentMinutes <= closeTime;
+    });
+  }
+
+  function renderUI() {
+    const now = new Date();
+    document.getElementById("liveClock").textContent = now.toLocaleString("en-GB", {
+      weekday: "long", day: "numeric", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    });
+
+    const activeLecture = getActiveLecture(now);
+    const classKey = activeLecture ? `${now.toDateString()}_${activeLecture.code}_${activeLecture.start}` : "CLOSED";
+
+    if (classKey !== currentActiveClassId) {
+      currentActiveClassId = classKey;
+      const badgeEl = document.getElementById("statusBadge");
+      const contentEl = document.getElementById("activeContent");
+
+      if (activeLecture) {
+        const openStr = formatMinutesToTime(timeToMinutes(activeLecture.start) - 15);
+        const closeStr = formatMinutesToTime(timeToMinutes(activeLecture.end) + 15);
+        const alreadySubmitted = localStorage.getItem(classKey);
+
+        badgeEl.innerHTML = `<span class="badge badge-open">Portal Open (${openStr} – ${closeStr})</span>`;
+        
+        let formHTML = `
+          <div class="lecture-box">
+            <div class="lecture-title">${activeLecture.code}: ${activeLecture.name}</div>
+            <div class="lecture-meta">
+              <strong>Lecturer:</strong> ${activeLecture.lecturer}<br>
+              <strong>Time:</strong> ${activeLecture.start} – ${activeLecture.end} (${activeLecture.group})<br>
+              <strong>Venue:</strong> ${activeLecture.venue}
+            </div>
+          </div>
+        `;
+
+        if (alreadySubmitted) {
+          formHTML += `<div id="statusMessage" class="success">Attendance already recorded for this session.</div>`;
+        } else {
+          formHTML += `
+            <form id="attendanceForm">
+              <label for="studentId">Student Index / ID Number</label>
+              <input type="text" id="studentId" placeholder="Enter your Index Number" required>
+
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" placeholder="Surname, First Name" required>
+
+              <button type="submit" id="submitBtn">Sign Attendance</button>
+            </form>
+            <div id="statusMessage"></div>
+          `;
+        }
+
+        contentEl.innerHTML = formHTML;
+
+        if (!alreadySubmitted) {
+          document.getElementById("attendanceForm").addEventListener("submit", (e) => handleFormSubmit(e, activeLecture, classKey));
+        }
+      } else {
+        badgeEl.innerHTML = `<span class="badge badge-closed">Portal Closed</span>`;
+        contentEl.innerHTML = `
+          <p style="margin:14px 0 4px 0; color:#475569; font-size:0.95rem; line-height:1.5;">
+            No lecture attendance window is currently active. Please return <strong>15 minutes before</strong> your scheduled class time.
+          </p>
+        `;
+      }
+    }
+  }
+
+  async function handleFormSubmit(e, lecture, classKey) {
+    e.preventDefault();
+    const btn = document.getElementById("submitBtn");
+    const statusMsg = document.getElementById("statusMessage");
+    
+    btn.disabled = true;
+    btn.textContent = "Recording Attendance...";
+    statusMsg.textContent = "";
+
+    const payload = {
+      day: lecture.dayName,
+      courseCode: lecture.code,
+      courseName: lecture.name,
+      lecturer: lecture.lecturer,
+      venue: lecture.venue,
+      group: lecture.group,
+      studentId: document.getElementById("studentId").value.trim().toUpperCase(),
+      fullName: document.getElementById("fullName").value.trim().toUpperCase()
+    };
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      localStorage.setItem(classKey, "true");
+      currentActiveClassId = null;
+      renderUI();
+    } catch (error) {
+      statusMsg.textContent = "Network error. Check your connection and try again.";
+      statusMsg.className = "error";
+      btn.disabled = false;
+      btn.textContent = "Sign Attendance";
+    }
+  }
+
+  function renderWeeklySchedule() {
+    const container = document.getElementById("timetableList");
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    
+    days.forEach(day => {
+      const classes = TIMETABLE.filter(c => c.dayName === day);
+      let html = `<div class="schedule-day">${day}</div>`;
+      
+      if (classes.length === 0) {
+        html += `<div style="font-size:0.82rem; color:#94a3b8; padding:4px 0;">No classes scheduled</div>`;
+      } else {
+        classes.forEach(c => {
+          html += `
+            <div class="schedule-item">
+              <div class="time-col">${c.start} - ${c.end}<br><span style="font-weight:500; font-size:0.75rem; color:#16a34a;">${c.group}</span></div>
+              <div class="info-col">
+                <strong>${c.code} · ${c.name}</strong><br>
+                <span style="color:#475569;">${c.lecturer}</span><br>
+                <span style="color:#64748b; font-size:0.78rem;">📍 ${c.venue}</span>
+              </div>
+            </div>
+          `;
+        });
+      }
+      container.innerHTML += html;
+    });
+  }
+
+  renderWeeklySchedule();
+  renderUI();
+  setInterval(renderUI, 1000);
+</script>
+
+</body>
+</html>
