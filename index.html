@@ -7,10 +7,16 @@
   <style>
     :root { --primary: #1e3a8a; --accent: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; }
-    .container { width: 100%; max-width: 500px; }
-    .header { text-align: center; margin-bottom: 18px; }
+    .container { width: 100%; max-width: 720px; }
+    .header { text-align: center; margin-bottom: 14px; }
     .header h1 { margin: 0; font-size: 1.4rem; color: var(--primary); }
     .clock { font-size: 0.9rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+    
+    /* Navigation Tabs */
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
+    .nav-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; background: transparent; color: #475569; margin: 0; }
+    .nav-btn.active { background: var(--card); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    
     .card { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 16px; }
     .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     .badge-open { background: #dcfce7; color: #166534; }
@@ -20,20 +26,48 @@
     .lecture-meta { font-size: 0.88rem; color: #334155; line-height: 1.5; }
     .geo-notice { font-size: 0.8rem; color: #475569; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 6px; margin-top: 12px; }
     label { display: block; margin-top: 12px; font-weight: 600; font-size: 0.88rem; color: #334155; }
-    input, button { width: 100%; padding: 12px; margin-top: 6px; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-    input { border: 1px solid #cbd5e1; }
-    input:focus { outline: none; border-color: var(--accent); }
-    button { background: var(--accent); color: white; border: none; font-weight: 600; margin-top: 18px; cursor: pointer; }
-    button:hover { background: #1d4ed8; }
-    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    input, select, button { width: 100%; padding: 11px; margin-top: 6px; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
+    input, select { border: 1px solid #cbd5e1; background: white; }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+    button.primary-btn { background: var(--accent); color: white; border: none; font-weight: 600; margin-top: 18px; cursor: pointer; }
+    button.primary-btn:hover { background: #1d4ed8; }
+    button.primary-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     #statusMessage { margin-top: 14px; text-align: center; font-weight: 600; font-size: 0.92rem; line-height: 1.4; }
     .success { color: #15803d; }
     .error { color: #b91c1c; }
+
+    /* Weekly Timetable */
     .schedule-day { font-weight: 700; color: var(--primary); margin: 14px 0 6px 0; font-size: 0.95rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
     .schedule-item { font-size: 0.85rem; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; gap: 10px; }
     .schedule-item:last-child { border-bottom: none; }
     .time-col { font-weight: 700; color: #334155; min-width: 90px; }
     .info-col { flex: 1; }
+
+    /* Records Dashboard Filters & Tables */
+    .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
+    .filters-grid label { margin-top: 0; font-size: 0.8rem; }
+    .filters-grid select, .filters-grid input { margin-top: 4px; padding: 8px; font-size: 0.88rem; }
+    .summary-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600; }
+    .action-btns { display: flex; gap: 8px; }
+    .pdf-btn { width: auto; padding: 7px 12px; margin: 0; background: #dc2626; color: white; border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+    .export-btn { width: auto; padding: 7px 12px; margin: 0; background: #16a34a; color: white; border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+    .course-group { margin-bottom: 20px; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .course-group-header { background: var(--primary); color: white; padding: 10px 14px; font-weight: 700; font-size: 0.95rem; display: flex; justify-content: space-between; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+    th { background: #f8fafc; color: #334155; font-weight: 700; }
+    tr:last-child td { border-bottom: none; }
+
+    /* Clean Print / PDF Layout */
+    @media print {
+      body { background: white; padding: 0; }
+      .nav-tabs, .filters-grid, .action-btns, #portalView, #lockScreen, #refreshBtn { display: none !important; }
+      .container { max-width: 100%; }
+      .card { box-shadow: none; padding: 0; }
+      .course-group { break-inside: avoid; border: 1px solid #94a3b8; }
+      .course-group-header { background: #1e3a8a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
   </style>
 </head>
 <body>
@@ -44,48 +78,136 @@
     <div class="clock" id="liveClock">Loading time...</div>
   </div>
 
-  <!-- Active Attendance Card -->
-  <div class="card" id="mainCard">
-    <div id="statusBadge"></div>
-    <div id="activeContent"></div>
+  <!-- Top Navigation Switcher -->
+  <div class="nav-tabs">
+    <button class="nav-btn active" id="tabPortalBtn" onclick="switchTab('portal')">Sign Attendance</button>
+    <button class="nav-btn" id="tabRecordsBtn" onclick="switchTab('records')">Admin Records 🔒</button>
   </div>
 
-  <!-- Weekly Timetable Reference -->
-  <div class="card">
-    <h3 style="margin:0 0 8px 0; font-size:1.05rem; color:#1e293b;">Weekly Lecture Timetable</h3>
-    <p style="margin:0 0 10px 0; font-size:0.8rem; color:#64748b;">Attendance opens 15 mins before start and closes 15 mins after end (or 15 mins before the next back-to-back lecture).</p>
-    <div id="timetableList"></div>
+  <!-- VIEW 1: STUDENT ATTENDANCE PORTAL -->
+  <div id="portalView">
+    <div class="card" id="mainCard">
+      <div id="statusBadge"></div>
+      <div id="activeContent"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0; font-size:1.05rem; color:#1e293b;">Weekly Lecture Timetable</h3>
+      <p style="margin:0 0 10px 0; font-size:0.8rem; color:#64748b;">Opens 15 mins before start and closes 15 mins after end (or 15 mins before the next back-to-back lecture).</p>
+      <div id="timetableList"></div>
+    </div>
+  </div>
+
+  <!-- VIEW 2: PIN-PROTECTED RECORDS DASHBOARD -->
+  <div id="recordsView" style="display:none;">
+    
+    <!-- Passcode Lock Screen -->
+    <div class="card" id="lockScreen">
+      <h3 style="margin:0 0 8px 0; color:var(--primary);">Authorized Access Only</h3>
+      <p style="margin:0 0 12px 0; font-size:0.88rem; color:#475569;">Enter the Course Rep / Lecturer PIN to view, filter, and download attendance records.</p>
+      <input type="password" id="pinInput" placeholder="Enter Admin PIN" onkeydown="if(event.key==='Enter') unlockRecords()">
+      <button class="primary-btn" onclick="unlockRecords()">Unlock Records</button>
+      <div id="pinError" class="error" style="margin-top:10px; font-size:0.88rem; font-weight:600; text-align:center;"></div>
+    </div>
+
+    <!-- Unlocked Dashboard -->
+    <div class="card" id="unlockedDashboard" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; font-size:1.1rem; color:var(--primary);">Attendance Records</h3>
+        <button id="refreshBtn" onclick="fetchRecords()" style="width:auto; margin:0; padding:6px 12px; font-size:0.82rem; background:#e2e8f0; color:#1e293b; border:none; font-weight:600; cursor:pointer;">↻ Refresh</button>
+      </div>
+
+      <div class="filters-grid">
+        <div>
+          <label for="filterCourse">Course</label>
+          <select id="filterCourse" onchange="renderRecords()">
+            <option value="ALL">All Courses</option>
+          </select>
+        </div>
+        <div>
+          <label for="filterWeek">Week</label>
+          <select id="filterWeek" onchange="renderRecords()">
+            <option value="ALL">All Weeks</option>
+          </select>
+        </div>
+        <div>
+          <label for="filterDay">Day</label>
+          <select id="filterDay" onchange="renderRecords()">
+            <option value="ALL">All Days</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+          </select>
+        </div>
+        <div>
+          <label for="searchStudent">Search ID / Name</label>
+          <input type="text" id="searchStudent" placeholder="Index or name..." oninput="renderRecords()">
+        </div>
+      </div>
+
+      <div class="summary-bar">
+        <span id="recordCount">Loading records...</span>
+        <div class="action-btns">
+          <button class="pdf-btn" onclick="window.print()">Download PDF</button>
+          <button class="export-btn" onclick="exportFilteredCSV()">Download CSV</button>
+        </div>
+      </div>
+
+      <div id="recordsContainer"></div>
+    </div>
   </div>
 </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiINwPkR6gZnfiwRZzP-GnsoPtZJdYdd-fqdA9ighdMQXovN3UrZ2rxXDIv46WJNDd/exec";
+  const ADMIN_PIN = "7070";
 
   // Campus Geofence Settings
   const CAMPUS_LAT = 4.9095164;
   const CAMPUS_LNG = -1.7569297;
   const MAX_RADIUS_METERS = 500;
 
-  // Timetable Data (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
   const TIMETABLE = [
     // MONDAY
     { dayNum: 1, dayName: "Monday", start: "08:00", end: "10:00", code: "MATH111", name: "ALGEBRA", venue: "ODURO BLOCK LF4", lecturer: "MRS. REBECCA NDUBA ARHIN", group: "Group B" },
     { dayNum: 1, dayName: "Monday", start: "10:00", end: "12:00", code: "BEEE103", name: "ENGINEERING DRAWING I", venue: "ODURO BLOCK SF2", lecturer: "MR. KINGSLEY NUNOO", group: "Group B" },
     { dayNum: 1, dayName: "Monday", start: "14:00", end: "16:00", code: "PCOS101", name: "COMMUNICATION SKILLS I", venue: "AUDITORIUM", lecturer: "FLORA OHENE ASANTE", group: "Group B" },
-    
     // TUESDAY
     { dayNum: 2, dayName: "Tuesday", start: "06:00", end: "08:00", code: "BEEE109", name: "ENGINEERING MECHANICS", venue: "ODURO BLOCK LF1", lecturer: "MR. CARIFA AMOUZOU", group: "Group B" },
     { dayNum: 2, dayName: "Tuesday", start: "14:00", end: "16:00", code: "PCLT101", name: "COMPUTER LITERACY", venue: "AUDITORIUM", lecturer: "MISS ANGELA ABA OTCHERE", group: "Group B" },
-
     // WEDNESDAY
     { dayNum: 3, dayName: "Wednesday", start: "14:00", end: "16:00", code: "BEEE101", name: "ELECTRONICS I", venue: "ODURO BLOCK FF2", lecturer: "MR. ISAAC AYIPEH MENSAH", group: "Group B" },
-
     // THURSDAY
     { dayNum: 4, dayName: "Thursday", start: "08:00", end: "10:00", code: "PAS111", name: "AFRICAN STUDIES", venue: "AUDITORIUM", lecturer: "MR. PETER YANKSON", group: "Group A" },
     { dayNum: 4, dayName: "Thursday", start: "10:00", end: "12:00", code: "BEEE107", name: "APPLIED ELECTRICITY", venue: "ODURO BLOCK TF2", lecturer: "MR. DACOSTA ASANTE", group: "Group B" }
   ];
 
   let currentActiveClassId = null;
+  let allRecords = [];
+  let filteredRecords = [];
+  let isUnlocked = false;
+
+  function switchTab(tab) {
+    document.getElementById("portalView").style.display = tab === "portal" ? "block" : "none";
+    document.getElementById("recordsView").style.display = tab === "records" ? "block" : "none";
+    document.getElementById("tabPortalBtn").classList.toggle("active", tab === "portal");
+    document.getElementById("tabRecordsBtn").classList.toggle("active", tab === "records");
+  }
+
+  function unlockRecords() {
+    const entered = document.getElementById("pinInput").value.trim();
+    const errEl = document.getElementById("pinError");
+    if (entered === ADMIN_PIN) {
+      isUnlocked = true;
+      errEl.textContent = "";
+      document.getElementById("lockScreen").style.display = "none";
+      document.getElementById("unlockedDashboard").style.display = "block";
+      fetchRecords();
+    } else {
+      errEl.textContent = "Incorrect PIN. Access denied.";
+    }
+  }
 
   function timeToMinutes(timeStr) {
     const [h, m] = timeStr.split(":").map(Number);
@@ -98,7 +220,6 @@
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
-  // Haversine formula to calculate distance in meters between two GPS coordinates
   function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
     const R = 6371000;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -106,33 +227,26 @@
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
-  // Computes the open and close window in minutes, preventing overlap with any subsequent class
   function getLectureWindow(cls) {
     const openTime = timeToMinutes(cls.start) - 15;
     let closeTime = timeToMinutes(cls.end) + 15;
-
     const sameDayClasses = TIMETABLE
       .filter(other => other.dayNum === cls.dayNum && timeToMinutes(other.start) > timeToMinutes(cls.start))
       .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
 
     if (sameDayClasses.length > 0) {
       const nextClassOpen = timeToMinutes(sameDayClasses[0].start) - 15;
-      if (closeTime > nextClassOpen) {
-        closeTime = nextClassOpen;
-      }
+      if (closeTime > nextClassOpen) closeTime = nextClassOpen;
     }
-
     return { openTime, closeTime };
   }
 
   function getActiveLecture(now) {
     const currentDay = now.getDay();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
     return TIMETABLE.find(cls => {
       if (cls.dayNum !== currentDay) return false;
       const { openTime, closeTime } = getLectureWindow(cls);
@@ -157,11 +271,8 @@
 
       if (activeLecture) {
         const { openTime, closeTime } = getLectureWindow(activeLecture);
-        const openStr = formatMinutesToTime(openTime);
-        const closeStr = formatMinutesToTime(closeTime);
         const alreadySubmitted = localStorage.getItem(classKey);
-
-        badgeEl.innerHTML = `<span class="badge badge-open">Portal Open (${openStr} – ${closeStr})</span>`;
+        badgeEl.innerHTML = `<span class="badge badge-open">Portal Open (${formatMinutesToTime(openTime)} – ${formatMinutesToTime(closeTime)})</span>`;
         
         let formHTML = `
           <div class="lecture-box">
@@ -181,30 +292,21 @@
             <form id="attendanceForm">
               <label for="studentId">Student Index / ID Number</label>
               <input type="text" id="studentId" placeholder="Enter your Index Number" required>
-
               <label for="fullName">Full Name</label>
               <input type="text" id="fullName" placeholder="Surname, First Name" required>
-
               <div class="geo-notice">📍 <strong>Campus Location Lock Active:</strong> You must be on campus and allow GPS location access to sign attendance.</div>
-
-              <button type="submit" id="submitBtn">Verify Location & Sign Attendance</button>
+              <button type="submit" class="primary-btn" id="submitBtn">Verify Location & Sign Attendance</button>
             </form>
             <div id="statusMessage"></div>
           `;
         }
-
         contentEl.innerHTML = formHTML;
-
         if (!alreadySubmitted) {
           document.getElementById("attendanceForm").addEventListener("submit", (e) => handleFormSubmit(e, activeLecture, classKey));
         }
       } else {
         badgeEl.innerHTML = `<span class="badge badge-closed">Portal Closed</span>`;
-        contentEl.innerHTML = `
-          <p style="margin:14px 0 4px 0; color:#475569; font-size:0.95rem; line-height:1.5;">
-            No lecture attendance window is currently active. Please return <strong>15 minutes before</strong> your scheduled class time.
-          </p>
-        `;
+        contentEl.innerHTML = `<p style="margin:14px 0 4px 0; color:#475569; font-size:0.95rem; line-height:1.5;">No lecture attendance window is currently active. Please return <strong>15 minutes before</strong> your scheduled class time.</p>`;
       }
     }
   }
@@ -226,10 +328,7 @@
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
-        const distance = calculateDistanceMeters(userLat, userLng, CAMPUS_LAT, CAMPUS_LNG);
-
+        const distance = calculateDistanceMeters(position.coords.latitude, position.coords.longitude, CAMPUS_LAT, CAMPUS_LNG);
         if (distance > MAX_RADIUS_METERS) {
           statusMsg.textContent = "Access Denied: You are not on campus.";
           statusMsg.className = "error";
@@ -239,7 +338,6 @@
         }
 
         btn.textContent = "Location Verified! Submitting...";
-
         const payload = {
           day: lecture.dayName,
           courseCode: lecture.code,
@@ -258,9 +356,9 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
-
           localStorage.setItem(classKey, "true");
           currentActiveClassId = null;
+          if (isUnlocked) fetchRecords();
           renderUI();
         } catch (error) {
           statusMsg.textContent = "Network error. Check your connection and try again.";
@@ -269,14 +367,8 @@
           btn.textContent = "Verify Location & Sign Attendance";
         }
       },
-      (geoError) => {
-        let errMsg = "Location access denied. Please turn on GPS and allow location permission in your browser settings.";
-        if (geoError.code === geoError.POSITION_UNAVAILABLE) {
-          errMsg = "Unable to detect GPS location. Turn on device Location/GPS and try again.";
-        } else if (geoError.code === geoError.TIMEOUT) {
-          errMsg = "GPS check timed out. Step near a window or open area and try again.";
-        }
-        statusMsg.textContent = errMsg;
+      () => {
+        statusMsg.textContent = "Location access denied. Please turn on GPS and allow location permission.";
         statusMsg.className = "error";
         btn.disabled = false;
         btn.textContent = "Verify Location & Sign Attendance";
@@ -287,36 +379,13 @@
 
   function renderWeeklySchedule() {
     const container = document.getElementById("timetableList");
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-    
-    days.forEach(day => {
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].forEach(day => {
       const classes = TIMETABLE.filter(c => c.dayName === day);
       let html = `<div class="schedule-day">${day}</div>`;
-      
       if (classes.length === 0) {
         html += `<div style="font-size:0.82rem; color:#94a3b8; padding:4px 0;">No classes scheduled</div>`;
       } else {
         classes.forEach(c => {
           html += `
             <div class="schedule-item">
-              <div class="time-col">${c.start} - ${c.end}<br><span style="font-weight:500; font-size:0.75rem; color:#16a34a;">${c.group}</span></div>
-              <div class="info-col">
-                <strong>${c.code} · ${c.name}</strong><br>
-                <span style="color:#475569;">${c.lecturer}</span><br>
-                <span style="color:#64748b; font-size:0.78rem;">📍 ${c.venue}</span>
-              </div>
-            </div>
-          `;
-        });
-      }
-      container.innerHTML += html;
-    });
-  }
-
-  renderWeeklySchedule();
-  renderUI();
-  setInterval(renderUI, 1000);
-</script>
-
-</body>
-</html>
+              <div class="time-col">${c.start} - ${c.end}<br><span style="font-
