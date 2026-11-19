@@ -61,7 +61,7 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiINwPkR6gZnfiwRZzP-GnsoPtZJdYdd-fqdA9ighdMQXovN3UrZ2rxXDIv46WJNDd/exec";
 
-  // Campus Geofence Settings (Updated Dropped Pin)
+  // Campus Geofence Settings
   const CAMPUS_LAT = 4.9095164;
   const CAMPUS_LNG = -1.7569297;
   const MAX_RADIUS_METERS = 500;
@@ -209,10 +209,10 @@
       async (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-        const distance = Math.round(calculateDistanceMeters(userLat, userLng, CAMPUS_LAT, CAMPUS_LNG));
+        const distance = calculateDistanceMeters(userLat, userLng, CAMPUS_LAT, CAMPUS_LNG);
 
         if (distance > MAX_RADIUS_METERS) {
-          statusMsg.textContent = `Access Denied: You are ${distance}m away from campus (must be within ${MAX_RADIUS_METERS}m).`;
+          statusMsg.textContent = "Access Denied: You are not on campus.";
           statusMsg.className = "error";
           btn.disabled = false;
           btn.textContent = "Verify Location & Sign Attendance";
