@@ -53,7 +53,7 @@
   <!-- Weekly Timetable Reference -->
   <div class="card">
     <h3 style="margin:0 0 8px 0; font-size:1.05rem; color:#1e293b;">Weekly Lecture Timetable</h3>
-    <p style="margin:0 0 10px 0; font-size:0.8rem; color:#64748b;">Attendance opens 15 mins before start and closes 15 mins after end.</p>
+    <p style="margin:0 0 10px 0; font-size:0.8rem; color:#64748b;">Attendance opens 15 mins before start and closes 15 mins after end (or 15 mins before the next back-to-back lecture).</p>
     <div id="timetableList"></div>
   </div>
 </div>
@@ -110,15 +110,33 @@
     return R * c;
   }
 
+  // Computes the open and close window in minutes, preventing overlap with any subsequent class
+  function getLectureWindow(cls) {
+    const openTime = timeToMinutes(cls.start) - 15;
+    let closeTime = timeToMinutes(cls.end) + 15;
+
+    const sameDayClasses = TIMETABLE
+      .filter(other => other.dayNum === cls.dayNum && timeToMinutes(other.start) > timeToMinutes(cls.start))
+      .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+
+    if (sameDayClasses.length > 0) {
+      const nextClassOpen = timeToMinutes(sameDayClasses[0].start) - 15;
+      if (closeTime > nextClassOpen) {
+        closeTime = nextClassOpen;
+      }
+    }
+
+    return { openTime, closeTime };
+  }
+
   function getActiveLecture(now) {
     const currentDay = now.getDay();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     return TIMETABLE.find(cls => {
       if (cls.dayNum !== currentDay) return false;
-      const openTime = timeToMinutes(cls.start) - 15;
-      const closeTime = timeToMinutes(cls.end) + 15;
-      return currentMinutes >= openTime && currentMinutes <= closeTime;
+      const { openTime, closeTime } = getLectureWindow(cls);
+      return currentMinutes >= openTime && currentMinutes < closeTime;
     });
   }
 
@@ -138,8 +156,9 @@
       const contentEl = document.getElementById("activeContent");
 
       if (activeLecture) {
-        const openStr = formatMinutesToTime(timeToMinutes(activeLecture.start) - 15);
-        const closeStr = formatMinutesToTime(timeToMinutes(activeLecture.end) + 15);
+        const { openTime, closeTime } = getLectureWindow(activeLecture);
+        const openStr = formatMinutesToTime(openTime);
+        const closeStr = formatMinutesToTime(closeTime);
         const alreadySubmitted = localStorage.getItem(classKey);
 
         badgeEl.innerHTML = `<span class="badge badge-open">Portal Open (${openStr} – ${closeStr})</span>`;
