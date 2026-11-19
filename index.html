@@ -168,7 +168,7 @@ function calcDist(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -315,4 +315,27 @@ function renderRecords() {
     grouped[k].push(r);
   });
 
-  container.innerHTML = Ob
+  container.innerHTML = Object.keys(grouped).sort().map(k => {
+    const rows = grouped[k];
+    return `<div class="course-group"><div class="course-group-header"><span>${k}</span><span>${rows.length} student(s)</span></div><div class="table-wrap"><table><thead><tr><th>Index ID</th><th>Full Name</th><th>Week</th><th>Day</th><th>Date</th><th>Time Marked</th><th>Group</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${r.studentId}</strong></td><td>${r.fullName}</td><td>${r.week}</td><td>${r.day}</td><td>${r.date}</td><td>${r.time}</td><td>${r.group}</td></tr>`).join("")}</tbody></table></div></div>`;
+  }).join("");
+}
+
+function exportFilteredCSV() {
+  if (!filteredRecords.length) return;
+  const headers = ["Course Code", "Course Name", "Week", "Day", "Date", "Time Marked", "Group", "Index ID", "Full Name"];
+  const csv = [headers.join(",")].concat(filteredRecords.map(r =>
+    [r.courseCode, r.courseName, r.week, r.day, r.date, r.time, r.group, r.studentId, r.fullName].map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")
+  )).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = `Attendance_Export_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+renderWeeklySchedule();
+renderUI();
+setInterval(renderUI, 1000);
+</script>
+</body>
+</html>
