@@ -1,320 +1,714 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Engineering Lecture Attendance</title>
-<style>
- :root { --primary: #1e3a8a; --accent: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b; }
- body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; }
- .container { width: 100%; max-width: 720px; }
- .header { text-align: center; margin-bottom: 14px; }
- .header h1 { margin: 0; font-size: 1.4rem; color: var(--primary); }
- .clock { font-size: 0.9rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
- .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
- .nav-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; background: transparent; color: #475569; margin: 0; }
- .nav-btn.active { background: var(--card); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
- .card { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 16px; }
- .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
- .badge-open { background: #dcfce7; color: #166534; }
- .badge-closed { background: #fee2e2; color: #991b1b; }
- .lecture-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 14px; border-radius: 8px; margin: 14px 0; }
- .lecture-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 0 0 6px 0; }
- .lecture-meta { font-size: 0.88rem; color: #334155; line-height: 1.5; }
- .geo-notice { font-size: 0.8rem; color: #475569; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 6px; margin-top: 12px; }
- label { display: block; margin-top: 12px; font-weight: 600; font-size: 0.88rem; color: #334155; }
- input, select, button { width: 100%; padding: 11px; margin-top: 6px; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
- input, select { border: 1px solid #cbd5e1; background: white; }
- input:focus, select:focus { outline: none; border-color: var(--accent); }
- button.primary-btn { background: var(--accent); color: white; border: none; font-weight: 600; margin-top: 18px; cursor: pointer; }
- button.primary-btn:disabled { background: #94a3b8; cursor: not-allowed; }
- #statusMessage { margin-top: 14px; text-align: center; font-weight: 600; font-size: 0.92rem; line-height: 1.4; }
- .success { color: #15803d; }
- .error { color: #b91c1c; }
- .schedule-day { font-weight: 700; color: var(--primary); margin: 14px 0 6px 0; font-size: 0.95rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
- .schedule-item { font-size: 0.85rem; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; gap: 10px; }
- .schedule-item:last-child { border-bottom: none; }
- .time-col { font-weight: 700; color: #334155; min-width: 90px; }
- .info-col { flex: 1; }
- .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
- .filters-grid label { margin-top: 0; font-size: 0.8rem; }
- .filters-grid select, .filters-grid input { margin-top: 4px; padding: 8px; font-size: 0.88rem; }
- .summary-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600; }
- .action-btns { display: flex; gap: 8px; }
- .pdf-btn { width: auto; padding: 7px 12px; margin: 0; background: #dc2626; color: white; border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
- .export-btn { width: auto; padding: 7px 12px; margin: 0; background: #16a34a; color: white; border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
- .course-group { margin-bottom: 20px; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
- .course-group-header { background: var(--primary); color: white; padding: 10px 14px; font-weight: 700; font-size: 0.95rem; display: flex; justify-content: space-between; }
- .table-wrap { overflow-x: auto; }
- table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
- th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
- th { background: #f8fafc; color: #334155; font-weight: 700; }
- tr:last-child td { border-bottom: none; }
- @media print {
- body { background: white; padding: 0; }
- .nav-tabs, .filters-grid, .action-btns, #portalView, #lockScreen, #refreshBtn { display: none !important; }
- .container { max-width: 100%; }
- .card { box-shadow: none; padding: 0; }
- .course-group { break-inside: avoid; border: 1px solid #94a3b8; }
- .course-group-header { background: #1e3a8a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
- }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineering Lecture Attendance</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --accent: #2563eb;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 720px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+    .clock {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .nav-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: #e2e8f0;
+      color: var(--text);
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .nav-btn.active {
+      background: var(--card);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .badge-open {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .badge-closed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .lecture-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .lecture-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .lecture-meta {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .geo-notice {
+      font-size: 0.8rem;
+      color: #475569;
+      margin-top: 8px;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.95rem;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    button.primary-btn {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      font-weight: 600;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+    button.primary-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    #statusMessage {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .success { color: #15803d; }
+    .error { color: #b91c1c; }
+    .schedule-day {
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 10px;
+      font-size: 0.92rem;
+    }
+    .schedule-item {
+      font-size: 0.85rem;
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      gap: 10px;
+    }
+    .schedule-item:last-child {
+      border-bottom: none;
+    }
+    .time-col {
+      font-weight: 700;
+      color: #334155;
+      min-width: 105px;
+    }
+    .info-col { flex: 1; }
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .filters-grid label {
+      margin-top: 0;
+      font-size: 0.82rem;
+    }
+    .filters-grid select, .filters-grid input {
+      margin-top: 4px;
+    }
+    .summary-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .pdf-btn, .export-btn {
+      width: auto;
+      padding: 7px 12px;
+      margin-top: 0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+    }
+    .pdf-btn { background: #dc2626; }
+    .export-btn { background: #16a34a; }
+    .small-btn {
+      width: auto;
+      padding: 6px 12px;
+      margin-top: 0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: var(--text);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .course-group {
+      margin-top: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .course-group-header {
+      background: #f8fafc;
+      padding: 8px 12px;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.9rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 600;
+    }
+    @media print {
+      .nav-tabs, .filters-grid, .action-btns, #refreshBtn, #lockScreen {
+        display: none !important;
+      }
+      body { background: #ffffff; padding: 0; }
+      .card { box-shadow: none; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
- <div class="header">
- <h1>Engineering Attendance Portal</h1>
- <div class="clock" id="liveClock">Loading time...</div>
- </div>
- <div class="nav-tabs">
- <button class="nav-btn active" id="tabPortalBtn" onclick="switchTab('portal')">Sign Attendance</button>
- <button class="nav-btn" id="tabRecordsBtn" onclick="switchTab('records')">Admin Records</button>
- </div>
- <div id="portalView">
- <div class="card" id="mainCard">
- <div id="statusBadge"></div>
- <div id="activeContent"></div>
- </div>
- <div class="card">
- <h3 style="margin:0 0 8px 0; font-size:1.05rem; color:#1e293b;">Weekly Lecture Timetable</h3>
- <p style="margin:0 0 10px 0; font-size:0.8rem; color:#64748b;">Opens 15 mins before start and closes 15 mins after end (or 15 mins before the next back-to-back lecture).</p>
- <div id="timetableList"></div>
- </div>
- </div>
- <div id="recordsView" style="display:none;">
- <div class="card" id="lockScreen">
- <h3 style="margin:0 0 8px 0; color:var(--primary);">Authorized Access Only</h3>
- <p style="margin:0 0 12px 0; font-size:0.88rem; color:#475569;">Enter the Course Rep / Lecturer PIN to view, filter, and download attendance records.</p>
- <input type="password" id="pinInput" placeholder="Enter Admin PIN" onkeydown="if(event.key==='Enter') unlockRecords()">
- <button class="primary-btn" onclick="unlockRecords()">Unlock Records</button>
- <div id="pinError" class="error" style="margin-top:10px; font-size:0.88rem; font-weight:600; text-align:center;"></div>
- </div>
- <div class="card" id="unlockedDashboard" style="display:none;">
- <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
- <h3 style="margin:0; font-size:1.1rem; color:var(--primary);">Attendance Records</h3>
- <button id="refreshBtn" onclick="fetchRecords()" style="width:auto; margin:0; padding:6px 12px; font-size:0.82rem; background:#e2e8f0; color:#1e293b; border:none; font-weight:600; cursor:pointer;">Refresh</button>
- </div>
- <div class="filters-grid">
- <div><label for="filterCourse">Course</label><select id="filterCourse" onchange="renderRecords()"><option value="ALL">All Courses</option></select></div>
- <div><label for="filterWeek">Week</label><select id="filterWeek" onchange="renderRecords()"><option value="ALL">All Weeks</option></select></div>
- <div><label for="filterDay">Day</label><select id="filterDay" onchange="renderRecords()"><option value="ALL">All Days</option><option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option></select></div>
- <div><label for="searchStudent">Search ID / Name</label><input type="text" id="searchStudent" placeholder="Index or name..." oninput="renderRecords()"></div>
- </div>
- <div class="summary-bar">
- <span id="recordCount">Loading records...</span>
- <div class="action-btns">
- <button class="pdf-btn" onclick="window.print()">Download PDF</button>
- <button class="export-btn" onclick="exportFilteredCSV()">Download CSV</button>
- </div>
- </div>
- <div id="recordsContainer"></div>
- </div>
- </div>
-</div>
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiINwPkR6gZnfiwRZzP-GnsoPtZJdYddfqdA9ighdMQXovN3UrZ2rxXDIv46WJNDd/exec";
-const ADMIN_PIN = "7070";
-const CAMPUS_LAT = 4.9095164;
-const CAMPUS_LNG = -1.7569297;
-const MAX_RADIUS_METERS = 500;
-const TIMETABLE = [
- { dayNum: 1, dayName: "Monday", start: "08:00", end: "10:00", code: "MATH111", name: "ALGEBRA", venue: "ODURO BLOCK LF4", lecturer: "MRS. REBECCA NDUBA ARHIN", group: "Group B" },
- { dayNum: 1, dayName: "Monday", start: "10:00", end: "12:00", code: "BEEE103", name: "ENGINEERING DRAWING I", venue: "ODURO BLOCK SF2", lecturer: "MR. KINGSLEY NUNOO", group: "Group B" },
- { dayNum: 1, dayName: "Monday", start: "14:00", end: "16:00", code: "PCOS101", name: "COMMUNICATION SKILLS I", venue: "AUDITORIUM", lecturer: "FLORA OHENE ASANTE", group: "Group B" },
- { dayNum: 2, dayName: "Tuesday", start: "06:00", end: "08:00", code: "BEEE109", name: "ENGINEERING MECHANICS", venue: "ODURO BLOCK LF1", lecturer: "MR. CARIFA AMOUZOU", group: "Group B" },
- { dayNum: 2, dayName: "Tuesday", start: "14:00", end: "16:00", code: "PCLT101", name: "COMPUTER LITERACY", venue: "AUDITORIUM", lecturer: "MISS ANGELA ABA OTCHERE", group: "Group B" },
- { dayNum: 3, dayName: "Wednesday", start: "14:00", end: "16:00", code: "BEEE101", name: "ELECTRONICS I", venue: "ODURO BLOCK FF2", lecturer: "MR. ISAAC AYIPEH MENSAH", group: "Group B" },
- { dayNum: 4, dayName: "Thursday", start: "08:00", end: "10:00", code: "PAS111", name: "AFRICAN STUDIES", venue: "AUDITORIUM", lecturer: "MR. PETER YANKSON", group: "Group A" },
- { dayNum: 4, dayName: "Thursday", start: "10:00", end: "12:00", code: "BEEE107", name: "APPLIED ELECTRICITY", venue: "ODURO BLOCK TF2", lecturer: "MR. DACOSTA ASANTE", group: "Group B" }
-];
-let currentActiveClassId = null;
-let allRecords = [];
-let filteredRecords = [];
-let isUnlocked = false;
-function switchTab(tab) {
- document.getElementById("portalView").style.display = tab === "portal" ? "block" : "none";
- document.getElementById("recordsView").style.display = tab === "records" ? "block" : "none";
- document.getElementById("tabPortalBtn").classList.toggle("active", tab === "portal");
- document.getElementById("tabRecordsBtn").classList.toggle("active", tab === "records");
-}
-function unlockRecords() {
- const entered = document.getElementById("pinInput").value.trim();
- const errEl = document.getElementById("pinError");
- if (entered === ADMIN_PIN) {
- isUnlocked = true;
- errEl.textContent = "";
- document.getElementById("lockScreen").style.display = "none";
- document.getElementById("unlockedDashboard").style.display = "block";
- fetchRecords();
- } else {
- errEl.textContent = "Incorrect PIN. Access denied.";
- }
-}
-function timeToMinutes(t) {
- const p = t.split(":").map(Number);
- return p[0] * 60 + p[1];
-}
-function formatMinutesToTime(mins) {
- return String(Math.floor(mins / 60)).padStart(2, '0') + ":" + String(mins % 60).padStart(2, '0');
-}
-function calcDist(lat1, lon1, lat2, lon2) {
- const R = 6371000;
- const dLat = (lat2 - lat1) * Math.PI / 180;
- const dLon = (lon2 - lon1) * Math.PI / 180;
- const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
- return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-function getLectureWindow(cls) {
- const openTime = timeToMinutes(cls.start) - 15;
- let closeTime = timeToMinutes(cls.end) + 15;
- const next = TIMETABLE.filter(o => o.dayNum === cls.dayNum && timeToMinutes(o.start) > timeToMinutes(cls.start))
- .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
- if (next.length > 0 && closeTime > timeToMinutes(next[0].start) - 15) {
- closeTime = timeToMinutes(next[0].start) - 15;
- }
- return { openTime, closeTime };
-}
-function getActiveLecture(now) {
- const d = now.getDay();
- const m = now.getHours() * 60 + now.getMinutes();
- return TIMETABLE.find(c => {
- if (c.dayNum !== d) return false;
- const w = getLectureWindow(c);
- return m >= w.openTime && m < w.closeTime;
- });
-}
-function renderUI() {
- const now = new Date();
- document.getElementById("liveClock").textContent = now.toDateString() + " | " + now.toTimeString().slice(0, 8);
- const active = getActiveLecture(now);
- const key = active ? now.toDateString() + "_" + active.code + "_" + active.start : "CLOSED";
- if (key !== currentActiveClassId) {
- currentActiveClassId = key;
- const badge = document.getElementById("statusBadge");
- const content = document.getElementById("activeContent");
- if (active) {
- const w = getLectureWindow(active);
- const done = localStorage.getItem(key);
- badge.innerHTML = `<span class="badge badge-open">Portal Open (${formatMinutesToTime(w.openTime)} - ${formatMinutesToTime(w.closeTime)})</span>`;
- let html = `<div class="lecture-box"><div class="lecture-title">${active.code}: ${active.name}</div><div class="lecture-meta"><strong>Lecturer:</strong> ${active.lecturer}<br><strong>Time:</strong> ${active.start} - ${active.end} (${active.group})<br><strong>Venue:</strong> ${active.venue}</div></div>`;
- if (done) {
- html += `<div id="statusMessage" class="success">Attendance already recorded for this session.</div>`;
- } else {
- html += `<form id="attendanceForm"><label for="studentId">Student Index / ID Number</label><input type="text" id="studentId" placeholder="Enter your Index Number" required><label for="fullName">Full Name</label><input type="text" id="fullName" placeholder="Surname, First Name" required><div class="geo-notice"><strong>Campus Location Lock Active:</strong> You must be on campus and allow GPS location access to sign attendance.</div><button type="submit" class="primary-btn" id="submitBtn">Verify Location & Sign Attendance</button></form><div id="statusMessage"></div>`;
- }
- content.innerHTML = html;
- if (!done) document.getElementById("attendanceForm").addEventListener("submit", e => handleFormSubmit(e, active, key));
- } else {
- badge.innerHTML = `<span class="badge badge-closed">Portal Closed</span>`;
- content.innerHTML = `<p style="margin:14px 0 4px 0; color:#475569; font-size:0.95rem; line-height:1.5;">No lecture attendance window is currently active. Please return <strong>15 minutes before</strong> your scheduled class time.</p>`;
- }
- }
-}
-function handleFormSubmit(e, lecture, classKey) {
- e.preventDefault();
- const btn = document.getElementById("submitBtn");
- const msg = document.getElementById("statusMessage");
- if (!navigator.geolocation) { msg.textContent = "GPS not supported."; msg.className = "error"; return; }
- btn.disabled = true; btn.textContent = "Checking Campus Location..."; msg.textContent = "";
- navigator.geolocation.getCurrentPosition(async pos => {
- if (calcDist(pos.coords.latitude, pos.coords.longitude, CAMPUS_LAT, CAMPUS_LNG) > MAX_RADIUS_METERS) {
- msg.textContent = "Access Denied: You are not on campus."; msg.className = "error";
- btn.disabled = false; btn.textContent = "Verify Location & Sign Attendance"; return;
- }
- btn.textContent = "Location Verified! Submitting...";
- const payload = {
- day: lecture.dayName, courseCode: lecture.code, courseName: lecture.name,
- lecturer: lecture.lecturer, venue: lecture.venue, group: lecture.group,
- studentId: document.getElementById("studentId").value.trim().toUpperCase(),
- fullName: document.getElementById("fullName").value.trim().toUpperCase()
- };
- try {
- await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
- localStorage.setItem(classKey, "true");
- currentActiveClassId = null;
- if (isUnlocked) fetchRecords();
- renderUI();
- } catch (err) {
- msg.textContent = "Network error. Try again."; msg.className = "error";
- btn.disabled = false; btn.textContent = "Verify Location & Sign Attendance";
- }
- }, () => {
- msg.textContent = "Location access denied. Turn on GPS and allow location permission."; msg.className = "error";
- btn.disabled = false; btn.textContent = "Verify Location & Sign Attendance";
- }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
-}
-function renderWeeklySchedule() {
- const container = document.getElementById("timetableList");
- let out = "";
- ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].forEach(day => {
- const list = TIMETABLE.filter(c => c.dayName === day);
- out += `<div class="schedule-day">${day}</div>`;
- if (!list.length) out += `<div style="font-size:0.82rem; color:#94a3b8; padding:4px 0;">No classes scheduled</div>`;
- else list.forEach(c => {
- out += `<div class="schedule-item"><div class="time-col">${c.start} - ${c.end}<br><span style="font-weight:500; font-size:0.75rem; color:#16a34a;">${c.group}</span></div><div class="info-col"><strong>${c.code} - ${c.name}</strong><br><span style="color:#475569;">${c.lecturer}</span><br><span style="color:#64748b; font-size:0.78rem;">Venue: ${c.venue}</span></div></div>`;
- });
- });
- container.innerHTML = out;
-}
-async function fetchRecords() {
- const container = document.getElementById("recordsContainer");
- document.getElementById("recordCount").textContent = "Fetching live records...";
- container.innerHTML = "";
- try {
- const res = await fetch(SCRIPT_URL);
- const data = await res.json();
- if (data.status === "success") {
- allRecords = data.records;
- const courses = [...new Set(allRecords.map(r => r.courseCode).filter(Boolean))].sort();
- const weeks = [...new Set(allRecords.map(r => r.week).filter(Boolean))];
- document.getElementById("filterCourse").innerHTML = `<option value="ALL">All Courses</option>` + courses.map(c => `<option value="${c}">${c}</option>`).join("");
- document.getElementById("filterWeek").innerHTML = `<option value="ALL">All Weeks</option>` + weeks.map(w => `<option value="${w}">${w}</option>`).join("");
- renderRecords();
- } else document.getElementById("recordCount").textContent = "Error loading records.";
- } catch (e) {
- document.getElementById("recordCount").textContent = "Unable to connect. Ensure Apps Script is deployed with doGet().";
- }
-}
-function renderRecords() {
- const cVal = document.getElementById("filterCourse").value;
- const wVal = document.getElementById("filterWeek").value;
- const dVal = document.getElementById("filterDay").value;
- const qVal = document.getElementById("searchStudent").value.trim().toLowerCase();
- filteredRecords = allRecords.filter(r =>
- (cVal === "ALL" || r.courseCode === cVal) &&
- (wVal === "ALL" || r.week === wVal) &&
- (dVal === "ALL" || r.day === dVal) &&
- (!qVal || r.studentId.toLowerCase().includes(qVal) || r.fullName.toLowerCase().includes(qVal))
- );
- document.getElementById("recordCount").textContent = `Showing ${filteredRecords.length} record(s)`;
- const container = document.getElementById("recordsContainer");
- if (!filteredRecords.length) { container.innerHTML = `<p style="text-align:center; color:#64748b; padding:20px 0;">No attendance records match your filters.</p>`; return; }
- const grouped = {};
- filteredRecords.forEach(r => {
- const k = `${r.courseCode} - ${r.courseName}`;
- if (!grouped[k]) grouped[k] = [];
- grouped[k].push(r);
- });
- container.innerHTML = Object.keys(grouped).sort().map(k => {
- const rows = grouped[k];
- return `<div class="course-group"><div class="course-group-header"><span>${k}</span><span>${rows.length} student(s)</span></div><div class="table-wrap"><table><thead><tr><th>Index ID</th><th>Full Name</th><th>Week</th><th>Day</th><th>Date</th><th>Time Marked</th><th>Group</th></tr></thead><tbody>${rows.map(r => `<tr><td><strong>${r.studentId}</strong></td><td>${r.fullName}</td><td>${r.week}</td><td>${r.day}</td><td>${r.date}</td><td>${r.time}</td><td>${r.group}</td></tr>`).join("")}</tbody></table></div></div>`;
- }).join("");
-}
-function exportFilteredCSV() {
- if (!filteredRecords.length) return;
-  const headers = ["Course Code", "Course Name", "Week", "Day", "Date", "Time Marked", "Group", "Index ID", "Full Name"];
-  const csv = [headers.join(",")].concat(filteredRecords.map(r =>
-    [r.courseCode, r.courseName, r.week, r.day, r.date, r.time, r.group, r.studentId, r.fullName].map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")
-  )).join("\n");
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-  a.download = `Attendance_Export_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-}
+  <div class="container">
+    <div class="header">
+      <h1>Engineering Attendance Portal</h1>
+      <div class="clock" id="liveClock">Loading clock...</div>
+    </div>
 
-renderWeeklySchedule();
-renderUI();
-setInterval(renderUI, 1000);
-</script>
+    <div class="nav-tabs">
+      <button type="button" class="nav-btn active" id="tabSign" onclick="switchTab('sign')">Sign Attendance</button>
+      <button type="button" class="nav-btn" id="tabRecords" onclick="switchTab('records')">Admin Records</button>
+    </div>
+
+    <div id="signView">
+      <div class="card" id="mainCard">
+        <div id="statusBadge"></div>
+        <div id="activeContent"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin: 0 0 8px 0; font-size: 1.05rem; color: var(--primary);">Weekly Lecture Timetable</h3>
+        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--muted);">Attendance opens automatically during scheduled lecture windows.</p>
+        <div id="timetableList"></div>
+      </div>
+    </div>
+
+    <div id="recordsView" style="display: none;">
+      <div class="card" id="lockScreen">
+        <h3 style="margin: 0 0 8px 0; color: var(--primary);">Admin Access</h3>
+        <p style="margin: 0 0 12px 0; font-size: 0.88rem; color: var(--muted);">Enter the admin PIN to view, filter, and export attendance records.</p>
+        <input type="password" id="pinInput" placeholder="Enter PIN">
+        <button type="button" class="primary-btn" onclick="unlockRecords()">Unlock Records</button>
+        <div id="pinError" class="error" style="margin-top: 8px; font-size: 0.85rem;"></div>
+      </div>
+
+      <div class="card" id="unlockedDashboard" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary);">Attendance Records</h3>
+          <button type="button" class="small-btn" id="refreshBtn" onclick="fetchRecords()">Refresh</button>
+        </div>
+
+        <div class="filters-grid">
+          <div>
+            <label for="filterCourse">Course</label>
+            <select id="filterCourse" onchange="applyFilters()">
+              <option value="ALL">All Courses</option>
+            </select>
+          </div>
+          <div>
+            <label for="filterWeek">Week</label>
+            <select id="filterWeek" onchange="applyFilters()">
+              <option value="ALL">All Weeks</option>
+            </select>
+          </div>
+          <div>
+            <label for="filterDay">Day</label>
+            <select id="filterDay" onchange="applyFilters()">
+              <option value="ALL">All Days</option>
+            </select>
+          </div>
+          <div>
+            <label for="searchStudent">Search ID / Name</label>
+            <input type="text" id="searchStudent" placeholder="Index or name..." oninput="applyFilters()">
+          </div>
+        </div>
+
+        <div class="summary-bar">
+          <span id="recordCount" style="font-size: 0.88rem; font-weight: 600; color: var(--muted);">Loading records...</span>
+          <div class="action-btns">
+            <button type="button" class="pdf-btn" onclick="window.print()">Download PDF</button>
+            <button type="button" class="export-btn" onclick="exportFilteredCSV()">Download CSV</button>
+          </div>
+        </div>
+
+        <div id="recordsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiINwPkR6gZnfiwRZzP-GnsoPtZJdYdd-fqdA9ighdMQXovN3UrZ2rxXDIv46WJNDd/exec";
+    const ADMIN_PIN = "7070";
+    const CAMPUS_LAT = 4.9095164;
+    const CAMPUS_LNG = -1.7844028;
+    const MAX_DISTANCE_METERS = 500;
+
+    const SCHEDULE = [
+      { day: "Monday", start: "08:00", end: "10:00", code: "MECH201", name: "Strength of Materials", lecturer: "Dr. K. Mensah", venue: "Eng Block A - Room 102" },
+      { day: "Tuesday", start: "10:30", end: "12:30", code: "ELEC203", name: "Circuit Theory II", lecturer: "Ing. A. Boateng", venue: "Eng Block B - Lab 1" },
+      { day: "Wednesday", start: "14:00", end: "16:00", code: "MATH205", name: "Engineering Mathematics III", lecturer: "Prof. E. Owusu", venue: "Lecture Theatre 2" },
+      { day: "Thursday", start: "09:00", end: "11:00", code: "CIVL207", name: "Fluid Mechanics", lecturer: "Dr. S. Appiah", venue: "Eng Block A - Room 204" },
+      { day: "Friday", start: "13:00", end: "15:00", code: "COMP209", name: "Numerical Methods", lecturer: "Mr. D. Tetteh", venue: "ICT Lab 3" }
+    ];
+
+    const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    let allRecords = [];
+    let filteredRecords = [];
+    let isUnlocked = false;
+    let lastRenderedKey = "";
+
+    function toMinutes(hhmm) {
+      const parts = hhmm.split(":");
+      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+    }
+
+    function getActiveLecture(now) {
+      const dayName = DAYS[now.getDay()];
+      const currentMins = now.getHours() * 60 + now.getMinutes();
+      return SCHEDULE.find(item =>
+        item.day === dayName &&
+        currentMins >= toMinutes(item.start) &&
+        currentMins <= toMinutes(item.end)
+      ) || null;
+    }
+
+    function getDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function switchTab(tab) {
+      const signView = document.getElementById("signView");
+      const recordsView = document.getElementById("recordsView");
+      const tabSign = document.getElementById("tabSign");
+      const tabRecords = document.getElementById("tabRecords");
+
+      if (tab === "sign") {
+        signView.style.display = "block";
+        recordsView.style.display = "none";
+        tabSign.classList.add("active");
+        tabRecords.classList.remove("active");
+      } else {
+        signView.style.display = "none";
+        recordsView.style.display = "block";
+        tabSign.classList.remove("active");
+        tabRecords.classList.add("active");
+        if (isUnlocked && !allRecords.length) {
+          fetchRecords();
+        }
+      }
+    }
+
+    function renderWeeklySchedule() {
+      const target = document.getElementById("timetableList");
+      target.innerHTML = SCHEDULE.map(item => `
+        <div class="schedule-item">
+          <div class="time-col">${item.day}<br>${item.start} - ${item.end}</div>
+          <div class="info-col">
+            <strong>${item.code} - ${item.name}</strong><br>
+            <span style="color: var(--muted);">${item.lecturer} | ${item.venue}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderUI() {
+      const now = new Date();
+      document.getElementById("liveClock").textContent = now.toLocaleString();
+
+      const active = getActiveLecture(now);
+      const renderKey = active ? `${active.day}-${active.code}` : `CLOSED-${DAYS[now.getDay()]}`;
+      if (renderKey === lastRenderedKey) return;
+      lastRenderedKey = renderKey;
+
+      const badge = document.getElementById("statusBadge");
+      const content = document.getElementById("activeContent");
+
+      if (!active) {
+        badge.className = "badge badge-closed";
+        badge.textContent = "Attendance Closed";
+        content.innerHTML = `
+          <p style="margin: 0; color: var(--muted);">
+            There is no active engineering lecture scheduled right now (${DAYS[now.getDay()]}).
+            Please check the timetable below for upcoming sessions.
+          </p>
+        `;
+        return;
+      }
+
+      badge.className = "badge badge-open";
+      badge.textContent = "Attendance Open";
+      content.innerHTML = `
+        <div class="lecture-box">
+          <div class="lecture-title">${active.code} - ${active.name}</div>
+          <div class="lecture-meta">
+            <strong>Day:</strong> ${active.day} (${active.start} - ${active.end})<br>
+            <strong>Lecturer:</strong> ${active.lecturer}<br>
+            <strong>Venue:</strong> ${active.venue}
+          </div>
+          <div class="geo-notice">Location check verifies you are within ${MAX_DISTANCE_METERS}m of campus when submitting.</div>
+        </div>
+
+        <form id="attendanceForm" onsubmit="handleAttendanceSubmit(event)">
+          <label for="groupSelect">Group</label>
+          <select id="groupSelect" required>
+            <option value="">Select Group</option>
+            <option value="Group A">Group A</option>
+            <option value="Group B">Group B</option>
+          </select>
+
+          <label for="studentIdInput">Student ID / Index Number</label>
+          <input type="text" id="studentIdInput" placeholder="e.g. ENG/24/001" required>
+
+          <label for="fullNameInput">Full Name</label>
+          <input type="text" id="fullNameInput" placeholder="Enter your full name" required>
+
+          <button type="submit" class="primary-btn" id="submitBtn">Mark Attendance</button>
+          <div id="statusMessage"></div>
+        </form>
+      `;
+    }
+
+    function handleAttendanceSubmit(event) {
+      event.preventDefault();
+      const now = new Date();
+      const active = getActiveLecture(now);
+      const msgEl = document.getElementById("statusMessage");
+      const submitBtn = document.getElementById("submitBtn");
+
+      if (!active) {
+        msgEl.className = "error";
+        msgEl.textContent = "Lecture window has closed.";
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        msgEl.className = "error";
+        msgEl.textContent = "Geolocation is not supported on this device.";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      msgEl.className = "";
+      msgEl.textContent = "Verifying campus location...";
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const dist = getDistanceMeters(pos.coords.latitude, pos.coords.longitude, CAMPUS_LAT, CAMPUS_LNG);
+          if (dist > MAX_DISTANCE_METERS) {
+            msgEl.className = "error";
+            msgEl.textContent = `You are ${Math.round(dist)}m away from campus (max ${MAX_DISTANCE_METERS}m allowed).`;
+            submitBtn.disabled = false;
+            return;
+          }
+
+          const payload = {
+            day: active.day,
+            courseCode: active.code,
+            courseName: active.name,
+            lecturer: active.lecturer,
+            venue: active.venue,
+            group: document.getElementById("groupSelect").value,
+            studentId: document.getElementById("studentIdInput").value.trim(),
+            fullName: document.getElementById("fullNameInput").value.trim()
+          };
+
+          msgEl.textContent = "Submitting attendance...";
+          try {
+            await fetch(SCRIPT_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify(payload)
+            });
+
+            msgEl.className = "success";
+            msgEl.textContent = `Attendance recorded for ${payload.fullName} (${payload.studentId}).`;
+            document.getElementById("attendanceForm").reset();
+          } catch (err) {
+            msgEl.className = "error";
+            msgEl.textContent = "Failed to submit attendance. Please check your connection.";
+          } finally {
+            submitBtn.disabled = false;
+          }
+        },
+        () => {
+          msgEl.className = "error";
+          msgEl.textContent = "Location permission denied. Please allow location access to sign attendance.";
+          submitBtn.disabled = false;
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    function unlockRecords() {
+      const pin = document.getElementById("pinInput").value.trim();
+      const errEl = document.getElementById("pinError");
+      if (pin === ADMIN_PIN) {
+        isUnlocked = true;
+        errEl.textContent = "";
+        document.getElementById("lockScreen").style.display = "none";
+        document.getElementById("unlockedDashboard").style.display = "block";
+        fetchRecords();
+      } else {
+        errEl.textContent = "Incorrect PIN.";
+      }
+    }
+
+    async function fetchRecords() {
+      const countEl = document.getElementById("recordCount");
+      const container = document.getElementById("recordsContainer");
+      const refreshBtn = document.getElementById("refreshBtn");
+
+      refreshBtn.disabled = true;
+      countEl.textContent = "Loading records...";
+      container.innerHTML = "";
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
+        const data = await res.json();
+        if (!data || data.status !== "success" || !Array.isArray(data.records)) {
+          throw new Error("Invalid response format");
+        }
+        allRecords = data.records;
+        populateFilterOptions(allRecords);
+        applyFilters();
+      } catch (err) {
+  countEl.textContent = "0 record(s)";
+  container.innerHTML = `
+    <div class="error" style="margin-top: 12px;">
+      Unable to connect: ${err && err.message ? err.message : String(err)}
+    </div>
+  `;
+} finally {
+   
+        refreshBtn.disabled = false;
+      }
+    }
+
+    function populateFilterOptions(records) {
+      const courseSelect = document.getElementById("filterCourse");
+      const weekSelect = document.getElementById("filterWeek");
+      const daySelect = document.getElementById("filterDay");
+
+      const prevCourse = courseSelect.value;
+      const prevWeek = weekSelect.value;
+      const prevDay = daySelect.value;
+
+      const courses = [...new Set(records.map(r => r.courseCode).filter(Boolean))].sort();
+      const weeks = [...new Set(records.map(r => r.week).filter(Boolean))].sort();
+      const days = [...new Set(records.map(r => r.day).filter(Boolean))].sort();
+
+      courseSelect.innerHTML = `<option value="ALL">All Courses</option>` +
+        courses.map(c => `<option value="${c}">${c}</option>`).join("");
+            weekSelect.innerHTML = `<option value="ALL">All Weeks</option>` +
+        weeks.map(w => `<option value="${w}">${w}</option>`).join("");
+      daySelect.innerHTML = `<option value="ALL">All Days</option>` +
+        days.map(d => `<option value="${d}">${d}</option>`).join("");
+
+      if (courses.includes(prevCourse)) courseSelect.value = prevCourse;
+      if (weeks.includes(prevWeek)) weekSelect.value = prevWeek;
+      if (days.includes(prevDay)) daySelect.value = prevDay;
+    }
+
+    function applyFilters() {
+      const cVal = document.getElementById("filterCourse").value;
+      const wVal = document.getElementById("filterWeek").value;
+      const dVal = document.getElementById("filterDay").value;
+      const qVal = document.getElementById("searchStudent").value.trim().toLowerCase();
+
+      filteredRecords = allRecords.filter(r =>
+        (cVal === "ALL" || r.courseCode === cVal) &&
+        (wVal === "ALL" || r.week === wVal) &&
+        (dVal === "ALL" || r.day === dVal) &&
+        (
+          !qVal ||
+          String(r.studentId || "").toLowerCase().includes(qVal) ||
+          String(r.fullName || "").toLowerCase().includes(qVal)
+        )
+      );
+
+      document.getElementById("recordCount").textContent = `Showing ${filteredRecords.length} record(s)`;
+      const container = document.getElementById("recordsContainer");
+
+      if (!filteredRecords.length) {
+        container.innerHTML = `<p style="color: var(--muted); margin-top: 12px;">No matching attendance records found.</p>`;
+        return;
+      }
+
+      const grouped = {};
+      filteredRecords.forEach(r => {
+        const k = `${r.courseCode || "Unknown"} - ${r.courseName || ""}`;
+        if (!grouped[k]) grouped[k] = [];
+        grouped[k].push(r);
+      });
+
+      container.innerHTML = Object.keys(grouped).map(k => {
+        const rows = grouped[k];
+        return `
+          <div class="course-group">
+            <div class="course-group-header">${k} (${rows.length})</div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Week</th>
+                    <th>Day</th>
+                    <th>Group</th>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows.map(r => `
+                    <tr>
+                      <td>${r.date || ""}</td>
+                      <td>${r.time || ""}</td>
+                      <td>${r.week || ""}</td>
+                      <td>${r.day || ""}</td>
+                      <td>${r.group || ""}</td>
+                      <td>${r.studentId || ""}</td>
+                      <td>${r.fullName || ""}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function exportFilteredCSV() {
+      if (!filteredRecords.length) return;
+      const headers = ["Date", "Time", "Week", "Day", "Course Code", "Course Name", "Group", "Student ID", "Full Name"];
+      const escapeCsv = (val) => `"${String(val || "").replace(/"/g, '""')}"`;
+      const csvRows = [headers.map(escapeCsv).join(",")].concat(
+        filteredRecords.map(r => [
+          r.date, r.time, r.week, r.day, r.courseCode, r.courseName, r.group, r.studentId, r.fullName
+        ].map(escapeCsv).join(","))
+      );
+      const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Attendance_Export_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    renderWeeklySchedule();
+    renderUI();
+    setInterval(renderUI, 1000);
+  </script>
 </body>
 </html>
