@@ -14,8 +14,9 @@
       --text: #1e293b;
       --muted: #64748b;
       --border: #cbd5e1;
-      --found-bg: #ecfdf5;
-      --found-border: #6ee7b7;
+      --pill-bg: #f1f5f9;
+      --success-bg: #dcfce7;
+      --success-border: #86efac;
     }
 
     * {
@@ -28,7 +29,7 @@
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text);
-      background-color: #0b192c;
+      background-color: var(--bg);
       background-image: url("bg-electrical.jpg");
       background-size: cover;
       background-position: center;
@@ -36,52 +37,90 @@
       background-attachment: fixed;
     }
 
-    .emblem-box {
-      margin-top: 14px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .emblem-box img {
-      max-width: 150px;
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
     .container {
       max-width: 920px;
       margin: 0 auto;
     }
 
-    .header {
-      background: rgba(255, 255, 255, 0.96);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
+    .top-banner {
+      background: linear-gradient(135deg, #0f294a 0%, #166534 100%);
+      color: #ffffff;
+      border-radius: 14px 14px 0 0;
+      padding: 14px 16px;
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
 
-    .header h1 {
-      margin: 0;
-      font-size: 1.25rem;
-      color: var(--primary);
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .brand-logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      opacity: 0.92;
+      margin-top: 2px;
     }
 
     .clock {
-      font-size: 0.9rem;
-      color: var(--muted);
+      font-size: 0.82rem;
       font-weight: 600;
+      text-align: right;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .sub-header-bar {
+      background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 0 0 14px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+    }
+
+    .sub-header-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .nav-tabs {
@@ -94,26 +133,163 @@
       flex: 1;
       padding: 10px;
       border: 1px solid var(--border);
-      background: #e2e8f0;
+      background: rgba(241, 245, 249, 0.94);
       color: var(--text);
-      border-radius: 8px;
-      font-weight: 600;
+      border-radius: 10px;
+      font-weight: 700;
       cursor: pointer;
     }
 
     .nav-btn.active {
-      background: var(--card);
-      color: var(--primary);
-      border-color: var(--primary);
+      background: #ffffff;
+      color: var(--accent-dark);
+      border-color: var(--accent);
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.96);
+      background: rgba(255, 255, 255, 0.97);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 14px;
+      padding: 18px;
       margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .field-group {
+      margin-bottom: 14px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .autofill-box {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--pill-bg);
+      border: 1px solid #e2e8f0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+      text-align: center;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input.id-box,
+    input.text-box,
+    select,
+    button {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.98rem;
+    }
+
+    input.id-box {
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      background: #f8fafc;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .inline-edit-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      width: auto;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent-dark);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .success-banner-card {
+      margin-top: 16px;
+      padding: 20px 16px;
+      border-radius: 14px;
+      background: #ecfdf5;
+      border: 1.5px solid var(--success-border);
+      text-align: center;
+    }
+
+    .check-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 1.6rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .success-heading {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-dark);
+      margin: 0 0 6px 0;
+    }
+
+    .recorded-pill {
+      margin-top: 12px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      background: #dcfce7;
+      color: var(--accent-dark);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button.green-btn {
+      background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 13px 16px;
+      border-radius: 10px;
+      margin-top: 14px;
+      cursor: pointer;
+    }
+
+    button.green-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .badge {
@@ -121,7 +297,7 @@
       padding: 4px 10px;
       border-radius: 999px;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 10px;
     }
 
@@ -135,157 +311,39 @@
       color: #991b1b;
     }
 
-    .lecture-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
     .lecture-meta {
-      font-size: 0.88rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    label {
-      display: block;
-      margin-top: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .sub-hint {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 11px 12px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      font-size: 0.95rem;
-    }
-
-    input.id-input {
-      text-align: center;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
-    .student-found-card {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      background: var(--found-bg);
-      border: 1.5px solid var(--found-border);
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .found-check {
-      width: 36px;
-      height: 36px;
-      min-width: 36px;
-      border-radius: 9px;
-      background: var(--accent);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .found-tag {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: var(--accent-dark);
-      text-transform: uppercase;
-    }
-
-    .found-name {
-      font-size: 1.02rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-top: 2px;
-    }
-
-    .found-prog {
-      font-size: 0.84rem;
-      color: #334155;
-      margin-top: 2px;
-    }
-
-    .edit-link-btn {
-      background: none;
-      border: none;
-      padding: 4px 0 0 0;
-      margin-top: 4px;
-      width: auto;
-      font-size: 0.8rem;
-      color: #475569;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    .loc-pill {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 10px;
       font-size: 0.86rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #f1f5f9;
-      color: #334155;
-      border: 1px solid #cbd5e1;
-    }
-
-    .loc-pill.ok {
-      background: #ecfdf5;
-      color: #166534;
-      border-color: #a7f3d0;
-    }
-
-    .loc-pill.warn {
-      background: #fef2f2;
-      color: #991b1b;
-      border-color: #fecaca;
-    }
-
-    button.primary-btn {
-      background: var(--accent);
-      color: #ffffff;
-      border: none;
-      font-weight: 600;
-      margin-top: 16px;
-      cursor: pointer;
-    }
-
-    button.primary-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+      color: var(--muted);
+      margin-top: 4px;
     }
 
     .status-msg {
       margin-top: 12px;
       font-size: 0.9rem;
-      font-weight: 600;
+      font-weight: 700;
+      text-align: center;
     }
 
     .success { color: #15803d; }
     .error { color: #b91c1c; }
+
+    .emblem-box {
+      margin-top: 14px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .emblem-box img {
+      max-width: 150px;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
 
     .schedule-day {
       font-weight: 700;
@@ -322,8 +380,10 @@
     }
 
     .filters-grid label {
+      display: block;
       margin-top: 0;
       font-size: 0.82rem;
+      font-weight: 700;
     }
 
     .filters-grid select, .filters-grid input {
@@ -409,7 +469,7 @@
     }
 
     @media print {
-      .nav-tabs, .filters-grid, .action-btns, .small-btn {
+      .nav-tabs, .filters-grid, .action-btns, .small-btn, .green-btn {
         display: none !important;
       }
       body { background: #ffffff; padding: 0; }
@@ -419,25 +479,42 @@
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h1>Engineering Attendance Portal</h1>
+    <div class="top-banner">
+      <div class="brand-left">
+        <div class="brand-logo-box">
+          <img src="bg-electrical.jpg" alt="Diploma in Electrical Engineering Emblem" />
+        </div>
+        <div>
+          <div class="brand-title">ELECTRICAL ENGINEERING</div>
+          <div class="brand-sub">Diploma in Electrical Engineering &bull; Attendance Portal</div>
+        </div>
+      </div>
       <div class="clock" id="liveClock">Loading clock...</div>
     </div>
 
+    <div class="sub-header-bar">
+      <div class="sub-header-title">
+        <span>&#10003;</span>
+        <span>Attendance Mark</span>
+      </div>
+      <span id="headerSessionBadge" style="font-size: 0.8rem; font-weight: 700;">Checking...</span>
+    </div>
+
     <div class="nav-tabs">
-      <button type="button" id="tabSign" class="nav-btn active" onclick="switchTab('sign')">Sign Attendance</button>
+      <button type="button" id="tabSign" class="nav-btn active" onclick="switchTab('sign')">Attendance Mark</button>
       <button type="button" id="tabRecords" class="nav-btn" onclick="switchTab('records')">Admin Records</button>
     </div>
 
     <div id="signView">
       <div class="card" id="mainCard">
         <div id="statusBadge"></div>
-        <div id="activeContent"></div>
+        <div id="formContainer"></div>
+        <div id="receiptContainer" style="display: none;"></div>
       </div>
 
       <div class="card">
         <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: var(--primary);">Weekly Lecture Timetable</h3>
-        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--muted);">Attendance opens automatically during scheduled lecture hours.</p>
+        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--muted);">Course attendance opens automatically during scheduled lecture hours.</p>
         <div id="timetableList"></div>
         <div class="emblem-box">
           <img src="bg-electrical.jpg" alt="Diploma in Electrical Engineering Emblem" />
@@ -449,8 +526,8 @@
       <div class="card" id="lockScreen">
         <h3 style="margin: 0 0 8px 0; color: var(--primary);">Admin Access</h3>
         <p style="margin: 0 0 12px 0; font-size: 0.88rem; color: var(--muted);">Enter the admin PIN to view and export attendance records.</p>
-        <input type="password" id="pinInput" placeholder="Enter Admin PIN" />
-        <button type="button" class="primary-btn" onclick="unlockRecords()">Unlock Records</button>
+        <input type="password" id="pinInput" class="text-box" placeholder="Enter Admin PIN" />
+        <button type="button" class="green-btn" onclick="unlockRecords()">Unlock Records</button>
         <div id="pinError" class="error" style="margin-top: 8px; font-size: 0.88rem;"></div>
       </div>
 
@@ -481,7 +558,7 @@
           </div>
           <div>
             <label for="searchStudent">Search Student</label>
-            <input type="text" id="searchStudent" placeholder="ID or Name..." oninput="applyFilters()" />
+            <input type="text" id="searchStudent" class="text-box" placeholder="ID or Name..." oninput="applyFilters()" />
           </div>
         </div>
 
@@ -506,7 +583,7 @@
     const CAMPUS_LNG = -1.7844028;
     const MAX_DISTANCE_METERS = 500;
 
-    // Optional local/fallback roster map: { "21009023": { name: "YIADOM, Frederick Boakye", programme: "DIPLOMA IN ELECTRICAL ENGINEERING" } }
+    // Optional local fallback: { "21009023": { name: "YIADOM, Frederick Boakye", programme: "DIPLOMA IN ELECTRICAL ENGINEERING", course: "BEEE107 - APPLIED ELECTRICITY" } }
     const LOCAL_ROSTER = {};
 
     const SCHEDULE = [
@@ -532,8 +609,7 @@
     let filteredRecords = [];
     let rosterMap = { ...LOCAL_ROSTER };
     let rosterLoaded = false;
-    let manualEditMode = false;
-    let geoState = { status: "checking", accuracy: null, distance: null, coords: null, message: "Checking campus location..." };
+    let manualOverride = false;
     let isUnlocked = false;
     let lastRenderedKey = "";
 
@@ -616,122 +692,108 @@
         const data = await res.json();
         if (data && Array.isArray(data.students)) {
           data.students.forEach(s => {
-            const id = String(s.studentId || s.id || "").trim();
+            const id = String(s.studentId || s.id || s.indexNumber || "").trim();
             if (id) {
               rosterMap[id] = {
                 name: String(s.fullName || s.name || "").trim(),
-                programme: String(s.programme || s.program || s.group || "").trim()
+                programme: String(s.programme || s.program || "DIPLOMA IN ELECTRICAL ENGINEERING").trim(),
+                course: String(s.course || s.courseCode || "").trim()
               };
             }
           });
-          handleStudentIdInput();
+          onIndexNumberChange();
         }
       } catch (_) {
-        // Fallback smoothly to manual entry if roster endpoint isn't configured
+        // Falls back smoothly to manual entry if roster endpoint isn't active
       }
     }
 
-    function updateLocationBadge() {
-      const pill = document.getElementById("locPill");
-      if (!pill) return;
-      pill.className = "loc-pill";
-      if (geoState.status === "ok") {
-        pill.classList.add("ok");
-        pill.innerHTML = `<span>&#9678;</span><span>Location confirmed &mdash; accurate to &plusmn;${Math.round(geoState.accuracy)}m</span>`;
-      } else if (geoState.status === "warn") {
-        pill.classList.add("warn");
-        pill.innerHTML = `<span>&#9888;</span><span>${geoState.message}</span>`;
-      } else {
-        pill.innerHTML = `<span>&#9678;</span><span>${geoState.message}</span>`;
+    function enableManualEntry() {
+            manualOverride = true;
+      const nameBox = document.getElementById("autoNameBox");
+      const courseBox = document.getElementById("autoCourseBox");
+      const progBox = document.getElementById("autoProgBox");
+      const nameInput = document.getElementById("manualNameInput");
+      const courseInput = document.getElementById("manualCourseInput");
+      const progInput = document.getElementById("manualProgInput");
+
+      if (nameBox) nameBox.style.display = "none";
+      if (courseBox) courseBox.style.display = "none";
+      if (progBox) progBox.style.display = "none";
+      if (nameInput) {
+        nameInput.style.display = "block";
+        nameInput.focus();
       }
+      if (courseInput) courseInput.style.display = "block";
+      if (progInput) progInput.style.display = "block";
     }
 
-    function refreshGeolocation() {
-      if (!navigator.geolocation) {
-        geoState = { status: "warn", accuracy: null, distance: null, coords: null, message: "Geolocation is not supported on this device." };
-        updateLocationBadge();
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const dist = getDistanceMeters(
-            pos.coords.latitude,
-            pos.coords.longitude,
-            CAMPUS_LAT,
-            CAMPUS_LNG
-          );
-          if (dist > MAX_DISTANCE_METERS) {
-            geoState = {
-              status: "warn",
-              accuracy: pos.coords.accuracy,
-              distance: dist,
-              coords: pos.coords,
-              message: `Outside lecture zone (${Math.round(dist)}m away; accuracy &plusmn;${Math.round(pos.coords.accuracy)}m)`
-            };
-          } else {
-            geoState = {
-              status: "ok",
-              accuracy: pos.coords.accuracy,
-              distance: dist,
-              coords: pos.coords,
-              message: `Location confirmed — accurate to ±${Math.round(pos.coords.accuracy)}m`
-            };
-          }
-          updateLocationBadge();
-        },
-        (err) => {
-          geoState = {
-            status: "warn",
-            accuracy: null,
-            distance: null,
-            coords: null,
-            message: `Location check: ${err.message}`
-          };
-          updateLocationBadge();
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
-      );
+    function getCurrentCourseText() {
+      const active = getActiveLecture(new Date());
+      if (active) return `${active.code} - ${active.name} (${active.group})`;
+      return "No active lecture right now";
     }
 
-    function enableManualEdit() {
-      manualEditMode = true;
-      const foundBox = document.getElementById("studentFoundBox");
-      const manualWrap = document.getElementById("manualNameWrap");
-       const manualWrap = document.getElementById("manualNameWrap");
-      const nameInput = document.getElementById("fullName");
-      if (foundBox) foundBox.style.display = "none";
-      if (manualWrap) manualWrap.style.display = "block";
-      if (nameInput) nameInput.focus();
-    }
-
-    function handleStudentIdInput() {
+    function onIndexNumberChange() {
       const idInput = document.getElementById("studentId");
-      const foundBox = document.getElementById("studentFoundBox");
-      const manualWrap = document.getElementById("manualNameWrap");
-      const nameInput = document.getElementById("fullName");
-      if (!idInput || !foundBox || !manualWrap || !nameInput) return;
+      const nameBox = document.getElementById("autoNameBox");
+      const courseBox = document.getElementById("autoCourseBox");
+      const progBox = document.getElementById("autoProgBox");
+      const nameInput = document.getElementById("manualNameInput");
+      const courseInput = document.getElementById("manualCourseInput");
+      const progInput = document.getElementById("manualProgInput");
 
-      const rawId = idInput.value.trim();
-      const match = rosterMap[rawId];
+      if (!idInput || !nameBox || !courseBox || !progBox) return;
 
-      if (match && match.name && !manualEditMode) {
-        nameInput.value = match.name;
-        manualWrap.style.display = "none";
-        foundBox.style.display = "flex";
-        foundBox.innerHTML = `
-          <div class="found-check">&#10003;</div>
-          <div style="flex: 1;">
-            <div class="found-tag">Student Found</div>
-            <div class="found-name">${match.name}</div>
-            ${match.programme ? `<div class="found-prog">${match.programme}</div>` : ""}
-            <button type="button" class="edit-link-btn" onclick="enableManualEdit()">Not you, or details wrong? Edit manually</button>
-          </div>
-        `;
+      const idx = idInput.value.trim();
+      const student = rosterMap[idx];
+      const activeCourse = getCurrentCourseText();
+
+      if (student && student.name && !manualOverride) {
+        nameBox.textContent = student.name;
+        courseBox.textContent = student.course || activeCourse;
+        progBox.textContent = student.programme || "DIPLOMA IN ELECTRICAL ENGINEERING";
+
+        nameBox.style.display = "flex";
+        courseBox.style.display = "flex";
+        progBox.style.display = "flex";
+
+        if (nameInput) {
+          nameInput.style.display = "none";
+          nameInput.value = student.name;
+        }
+        if (courseInput) {
+          courseInput.style.display = "none";
+          courseInput.value = student.course || activeCourse;
+        }
+        if (progInput) {
+          progInput.style.display = "none";
+          progInput.value = student.programme || "DIPLOMA IN ELECTRICAL ENGINEERING";
+        }
       } else {
-        foundBox.style.display = "none";
-        manualWrap.style.display = "block";
+        nameBox.style.display = "none";
+        courseBox.style.display = "none";
+        progBox.style.display = "none";
+
+        if (nameInput) nameInput.style.display = "block";
+        if (courseInput) {
+          courseInput.style.display = "block";
+          if (!courseInput.value) courseInput.value = activeCourse;
+        }
+        if (progInput) {
+          progInput.style.display = "block";
+          if (!progInput.value) progInput.value = "DIPLOMA IN ELECTRICAL ENGINEERING";
+        }
       }
+    }
+
+    function backToForm() {
+      document.getElementById("receiptContainer").style.display = "none";
+      document.getElementById("formContainer").style.display = "block";
+      const form = document.getElementById("attendanceForm");
+      if (form) form.reset();
+      manualOverride = false;
+      onIndexNumberChange();
     }
 
     function renderUI() {
@@ -739,51 +801,73 @@
       document.getElementById("liveClock").textContent = now.toLocaleString();
 
       const active = getActiveLecture(now);
+      const headerBadge = document.getElementById("headerSessionBadge");
+      if (headerBadge) {
+        headerBadge.textContent = active ? `${active.code} (${active.group})` : "OFF HOURS";
+      }
+
       const renderKey = active
         ? `${active.day}-${active.start}-${active.code}-${active.group}`
         : `CLOSED-${DAYS[now.getDay()]}`;
 
       if (renderKey === lastRenderedKey) return;
       lastRenderedKey = renderKey;
-      manualEditMode = false;
+      manualOverride = false;
 
       const badgeEl = document.getElementById("statusBadge");
-      const contentEl = document.getElementById("activeContent");
+      const formContainer = document.getElementById("formContainer");
+      const receiptContainer = document.getElementById("receiptContainer");
+      receiptContainer.style.display = "none";
+      formContainer.style.display = "block";
 
       if (!active) {
         badgeEl.innerHTML = `<span class="badge badge-closed">Attendance Closed</span>`;
-        contentEl.innerHTML = `
-          <div class="lecture-title">No Scheduled Lecture Right Now</div>
-          <div class="lecture-meta">Check the weekly timetable below for upcoming class times.</div>
+        formContainer.innerHTML = `
+          <div style="font-size: 1.08rem; font-weight: 700; color: var(--primary);">No Scheduled Lecture Right Now</div>
+          <div class="lecture-meta">Check the weekly timetable below for upcoming class hours.</div>
         `;
         return;
       }
 
-      badgeEl.innerHTML = `<span class="badge badge-open">Attendance Open</span>`;
-      contentEl.innerHTML = `
-        <div class="lecture-title">${active.code} - ${active.name} (${active.group})</div>
-        <div class="lecture-meta">${active.start} - ${active.end} &bull; ${active.venue} &bull; ${active.lecturer}</div>
+      badgeEl.innerHTML = `<span class="badge badge-open">Attendance Open &bull; ${active.start} - ${active.end}</span>`;
+      formContainer.innerHTML = `
+        <div class="lecture-meta" style="margin-bottom: 12px;">
+          <strong>${active.venue}</strong> &bull; ${active.lecturer}
+        </div>
         <form id="attendanceForm" onsubmit="submitAttendance(event)">
-          <label for="studentId">Enter your Student ID</label>
-          <div class="sub-hint">Type your Student ID to check your details</div>
-          <input type="text" id="studentId" class="id-input" required placeholder="e.g. 21009023" oninput="manualEditMode = false; handleStudentIdInput();" />
-
-          <div id="studentFoundBox" class="student-found-card" style="display: none;"></div>
-
-          <div id="manualNameWrap">
-            <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" required placeholder="Enter Full Name" />
+          <div class="field-group">
+            <label for="studentId" class="field-label">Student ID / Index Number</label>
+            <input type="text" id="studentId" class="id-box" required placeholder="Enter Index Number" oninput="manualOverride = false; onIndexNumberChange();" />
+            <div class="inline-edit-row">
+              <span>Name &amp; course autofill when index number is found</span>
+              <button type="button" class="link-btn" onclick="enableManualEntry()">Edit manually</button>
+            </div>
           </div>
 
-          <div id="locPill" class="loc-pill">&#9678; Checking campus location...</div>
+          <div class="field-group">
+            <label for="manualNameInput" class="field-label">Name</label>
+            <div id="autoNameBox" class="autofill-box" style="display: none;"></div>
+            <input type="text" id="manualNameInput" class="text-box" required placeholder="Full Name" />
+          </div>
 
-          <button type="submit" id="submitBtn" class="primary-btn">Mark Attendance</button>
+          <div class="field-group">
+            <label for="manualCourseInput" class="field-label">Course</label>
+            <div id="autoCourseBox" class="autofill-box" style="display: none;"></div>
+            <input type="text" id="manualCourseInput" class="text-box" required value="${active.code} - ${active.name} (${active.group})" />
+          </div>
+
+          <div class="field-group">
+            <label for="manualProgInput" class="field-label">Programme</label>
+            <div id="autoProgBox" class="autofill-box" style="display: none;"></div>
+            <input type="text" id="manualProgInput" class="text-box" required value="DIPLOMA IN ELECTRICAL ENGINEERING" />
+          </div>
+
+          <button type="submit" id="submitBtn" class="green-btn">Mark Attendance</button>
         </form>
         <div id="submitStatus" class="status-msg"></div>
       `;
 
-      updateLocationBadge();
-      refreshGeolocation();
+      onIndexNumberChange();
       loadRosterIfNeeded();
     }
 
@@ -808,7 +892,7 @@
 
       submitBtn.disabled = true;
       statusEl.className = "status-msg";
-      statusEl.textContent = "Verifying your location...";
+      statusEl.textContent = "Verifying campus location...";
 
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -819,17 +903,6 @@
             CAMPUS_LNG
           );
 
-          geoState = {
-            status: distance > MAX_DISTANCE_METERS ? "warn" : "ok",
-            accuracy: pos.coords.accuracy,
-            distance,
-            coords: pos.coords,
-            message: distance > MAX_DISTANCE_METERS
-              ? `Outside lecture zone (${Math.round(distance)}m away)`
-              : `Location confirmed — accurate to ±${Math.round(pos.coords.accuracy)}m`
-          };
-          updateLocationBadge();
-
           if (distance > MAX_DISTANCE_METERS) {
             statusEl.className = "status-msg error";
             statusEl.textContent = `You are outside the allowed lecture zone (${Math.round(distance)}m away).`;
@@ -838,7 +911,9 @@
           }
 
           const studentIdVal = document.getElementById("studentId").value.trim();
-          const fullNameVal = document.getElementById("fullName").value.trim();
+          const fullNameVal = document.getElementById("manualNameInput").value.trim();
+          const courseVal = document.getElementById("manualCourseInput").value.trim();
+          const programmeVal = document.getElementById("manualProgInput").value.trim();
 
           const payload = {
             sheetId: SHEET_ID,
@@ -847,6 +922,8 @@
             day: active.day,
             courseCode: active.code,
             courseName: active.name,
+            courseDisplay: courseVal,
+            programme: programmeVal,
             group: active.group,
             venue: active.venue,
             studentId: studentIdVal,
@@ -856,18 +933,57 @@
           };
 
           try {
-            statusEl.textContent = "Saving attendance...";
+            statusEl.textContent = "Recording attendance...";
             const res = await fetch(SCRIPT_URL, {
               method: "POST",
               body: JSON.stringify(payload)
             });
             const data = await res.json();
+
             if (data && data.status === "success") {
-              statusEl.className = "status-msg success";
-              statusEl.textContent = "Attendance recorded successfully.";
-              manualEditMode = false;
-              document.getElementById("attendanceForm").reset();
-              handleStudentIdInput();
+              const prettyDate = now.toLocaleDateString("en-GB", {
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+              });
+              const prettyTime = now.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit"
+              });
+
+              document.getElementById("formContainer").style.display = "none";
+              const receiptEl = document.getElementById("receiptContainer");
+              receiptEl.style.display = "block";
+              receiptEl.innerHTML = `
+                <div class="field-group">
+                  <div class="field-label">Student ID</div>
+                  <div class="autofill-box">${studentIdVal}</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Name</div>
+                  <div class="autofill-box">${fullNameVal}</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Course</div>
+                  <div class="autofill-box">${courseVal}</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Programme</div>
+                  <div class="autofill-box">${programmeVal}</div>
+                </div>
+                <div class="success-banner-card">
+                  <div class="check-circle">&#10003;</div>
+                  <h3 class="success-heading">Attendance Marked Successfully!</h3>
+                  <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a;">Date: ${prettyDate}</div>
+                  <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a;">Time: ${prettyTime}</div>
+                </div>
+                <div class="recorded-pill">
+                  <span>&#10003;</span>
+                  <span>Your attendance has been recorded.</span>
+                </div>
+                <button type="button" class="green-btn" onclick="backToForm()">&#8962; Mark Another / Back to Form</button>
+              `;
             } else {
               throw new Error(data && data.message ? data.message : "Failed to save attendance.");
             }
@@ -879,14 +995,6 @@
           }
         },
         (geoErr) => {
-          geoState = {
-            status: "warn",
-            accuracy: null,
-            distance: null,
-            coords: null,
-            message: `Location error: ${geoErr.message}`
-          };
-          updateLocationBadge();
           statusEl.className = "status-msg error";
           statusEl.textContent = `Location error: ${geoErr.message}`;
           submitBtn.disabled = false;
@@ -1058,4 +1166,3 @@
   </script>
 </body>
 </html>
-  
