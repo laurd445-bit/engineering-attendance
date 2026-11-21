@@ -30,7 +30,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text);
       background-color: var(--bg);
-      background-image: url("bg-electrical.jpg");
+      background-image: url("bg-emblem.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -43,7 +43,7 @@
     }
 
     .top-banner {
-      background: linear-gradient(135deg, #0f294a 0%, #166534 100%);
+      background: linear-gradient(135deg, rgba(15, 41, 74, 0.96) 0%, rgba(22, 101, 52, 0.96) 100%);
       color: #ffffff;
       border-radius: 14px 14px 0 0;
       padding: 14px 16px;
@@ -51,7 +51,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.22);
     }
 
     .brand-left {
@@ -103,7 +103,7 @@
     }
 
     .sub-header-bar {
-      background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+      background: linear-gradient(90deg, rgba(22, 101, 52, 0.97), rgba(21, 128, 61, 0.97));
       color: #ffffff;
       padding: 12px 16px;
       border-radius: 0 0 14px 14px;
@@ -112,7 +112,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
     }
 
     .sub-header-title {
@@ -133,7 +133,7 @@
       flex: 1;
       padding: 10px;
       border: 1px solid var(--border);
-      background: rgba(241, 245, 249, 0.94);
+      background: rgba(241, 245, 249, 0.95);
       color: var(--text);
       border-radius: 10px;
       font-weight: 700;
@@ -147,12 +147,12 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.97);
+      background: rgba(255, 255, 255, 0.96);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 18px;
       margin-bottom: 16px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
     }
 
     .field-group {
@@ -327,51 +327,6 @@
     .success { color: #15803d; }
     .error { color: #b91c1c; }
 
-    .emblem-box {
-      margin-top: 14px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.96);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .emblem-box img {
-      max-width: 150px;
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .schedule-day {
-      font-weight: 700;
-      color: var(--primary);
-      margin-top: 10px;
-      font-size: 0.92rem;
-    }
-
-    .schedule-item {
-      font-size: 0.85rem;
-      padding: 6px 0;
-      border-bottom: 1px solid #f1f5f9;
-      display: flex;
-      gap: 10px;
-    }
-
-    .schedule-item:last-child {
-      border-bottom: none;
-    }
-
-    .time-col {
-      font-weight: 700;
-      color: #334155;
-      min-width: 105px;
-    }
-
-    .info-col { flex: 1; }
-
     .filters-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -510,15 +465,6 @@
         <div id="statusBadge"></div>
         <div id="formContainer"></div>
         <div id="receiptContainer" style="display: none;"></div>
-      </div>
-
-      <div class="card">
-        <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: var(--primary);">Weekly Lecture Timetable</h3>
-        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--muted);">Course attendance opens automatically during scheduled lecture hours.</p>
-        <div id="timetableList"></div>
-        <div class="emblem-box">
-          <img src="bg-electrical.jpg" alt="Diploma in Electrical Engineering Emblem" />
-        </div>
       </div>
     </div>
 
@@ -662,28 +608,6 @@
       }
     }
 
-    function renderWeeklySchedule() {
-      const target = document.getElementById("timetableList");
-      const grouped = {};
-      SCHEDULE.forEach(item => {
-        if (!grouped[item.day]) grouped[item.day] = [];
-        grouped[item.day].push(item);
-      });
-
-      target.innerHTML = Object.keys(grouped).map(day => `
-        <div class="schedule-day">${day}</div>
-        ${grouped[day].map(item => `
-          <div class="schedule-item">
-            <div class="time-col">${item.start} - ${item.end}</div>
-            <div class="info-col">
-              <strong>${item.code} - ${item.name}</strong> (${item.group})<br />
-              <span style="color: var(--muted);">${item.venue} &bull; ${item.lecturer}</span>
-            </div>
-          </div>
-        `).join("")}
-      `).join("");
-    }
-
     async function loadRosterIfNeeded() {
       if (rosterLoaded) return;
       rosterLoaded = true;
@@ -709,7 +633,7 @@
     }
 
     function enableManualEntry() {
-            manualOverride = true;
+      manualOverride = true;
       const nameBox = document.getElementById("autoNameBox");
       const courseBox = document.getElementById("autoCourseBox");
       const progBox = document.getElementById("autoProgBox");
@@ -760,7 +684,7 @@
 
         if (nameInput) {
           nameInput.style.display = "none";
-          nameInput.value = student.name;
+              nameInput.value = student.name;
         }
         if (courseInput) {
           courseInput.style.display = "none";
@@ -824,7 +748,7 @@
         badgeEl.innerHTML = `<span class="badge badge-closed">Attendance Closed</span>`;
         formContainer.innerHTML = `
           <div style="font-size: 1.08rem; font-weight: 700; color: var(--primary);">No Scheduled Lecture Right Now</div>
-          <div class="lecture-meta">Check the weekly timetable below for upcoming class hours.</div>
+          <div class="lecture-meta">Attendance opens automatically during scheduled lecture hours.</div>
         `;
         return;
       }
@@ -1160,7 +1084,6 @@
       URL.revokeObjectURL(url);
     }
 
-    renderWeeklySchedule();
     renderUI();
     setInterval(renderUI, 1000);
   </script>
