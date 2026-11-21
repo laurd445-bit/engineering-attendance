@@ -8,7 +8,7 @@
     :root {
       --primary: #0f294a;
       --accent: #1d4ed8;
-      --bg: #f4f6f9;
+      --bg: #0b192c;
       --card: #ffffff;
       --text: #1e293b;
       --muted: #64748b;
@@ -25,10 +25,8 @@
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text);
-      background-color: var(--bg);
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)),
-        url("bg-electrical.jpg");
+      background-color: #0b192c;
+      background-image: url("bg-electrical.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -651,8 +649,8 @@
 
     async function fetchRecords() {
       const countEl = document.getElementById("recordCount");
-          const container = document.getElementById("recordsContainer");
-      const refreshBtn = document.getElementById("refreshBtn");
+      const container = document.getElementById("recordsContainer");
+          const refreshBtn = document.getElementById("refreshBtn");
 
       refreshBtn.disabled = true;
       countEl.textContent = "Loading records...";
