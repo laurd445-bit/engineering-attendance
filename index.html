@@ -1,52 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Engineering Lecture Attendance</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engineering Attendance Portal</title>
   <style>
     :root {
-      --primary: #1e3a8a;
-      --accent: #2563eb;
-      --bg: #f1f5f9;
+      --primary: #0f294a;
+      --accent: #1d4ed8;
+      --bg: #f4f6f9;
       --card: #ffffff;
-      --text: #0f172a;
-      --muted: #475569;
+      --text: #1e293b;
+      --muted: #64748b;
       --border: #cbd5e1;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
       margin: 0;
       padding: 16px;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)),
+        url("bg-electrical.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    .emblem-box {
+      margin-top: 14px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       display: flex;
       justify-content: center;
+      align-items: center;
     }
-    .container {
+
+    .emblem-box img {
+      max-width: 150px;
       width: 100%;
-      max-width: 720px;
+      height: auto;
+      display: block;
     }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
     .header {
-      text-align: center;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
       margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
+
     .header h1 {
       margin: 0;
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       color: var(--primary);
     }
+
     .clock {
       font-size: 0.9rem;
       color: var(--muted);
-      margin-top: 4px;
+      font-weight: 600;
     }
+
     .nav-tabs {
       display: flex;
       gap: 8px;
       margin-bottom: 16px;
     }
+
     .nav-btn {
       flex: 1;
       padding: 10px;
@@ -57,18 +99,22 @@
       font-weight: 600;
       cursor: pointer;
     }
+
     .nav-btn.active {
       background: var(--card);
       color: var(--primary);
       border-color: var(--primary);
     }
+
     .card {
-      background: var(--card);
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     }
+
     .badge {
       display: inline-block;
       padding: 4px 10px;
@@ -77,42 +123,42 @@
       font-weight: 600;
       margin-bottom: 10px;
     }
+
     .badge-open {
       background: #dcfce7;
       color: #166534;
     }
+
     .badge-closed {
       background: #fee2e2;
       color: #991b1b;
     }
-    .lecture-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
+
     .lecture-title {
       font-size: 1.15rem;
       font-weight: 700;
       color: var(--primary);
     }
+
     .lecture-meta {
       font-size: 0.88rem;
       color: var(--muted);
       margin-top: 4px;
     }
+
     .geo-notice {
       font-size: 0.8rem;
       color: #475569;
       margin-top: 8px;
     }
+
     label {
       display: block;
       margin-top: 12px;
       font-size: 0.9rem;
       font-weight: 600;
     }
+
     input, select, button {
       width: 100%;
       padding: 10px 12px;
@@ -121,10 +167,12 @@
       border: 1px solid #cbd5e1;
       font-size: 0.95rem;
     }
+
     input:focus, select:focus {
       outline: none;
       border-color: var(--accent);
     }
+
     button.primary-btn {
       background: var(--accent);
       color: #ffffff;
@@ -133,23 +181,28 @@
       margin-top: 16px;
       cursor: pointer;
     }
+
     button.primary-btn:disabled {
-      background: #94a3b8;
+      opacity: 0.6;
       cursor: not-allowed;
     }
-    #statusMessage {
+
+    .status-msg {
       margin-top: 14px;
       font-size: 0.9rem;
       font-weight: 600;
     }
+
     .success { color: #15803d; }
     .error { color: #b91c1c; }
+
     .schedule-day {
       font-weight: 700;
       color: var(--primary);
       margin-top: 10px;
       font-size: 0.92rem;
     }
+
     .schedule-item {
       font-size: 0.85rem;
       padding: 6px 0;
@@ -157,42 +210,49 @@
       display: flex;
       gap: 10px;
     }
+
     .schedule-item:last-child {
       border-bottom: none;
     }
+
     .time-col {
       font-weight: 700;
       color: #334155;
       min-width: 105px;
     }
+
     .info-col { flex: 1; }
+
     .filters-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 10px;
       margin-top: 12px;
     }
+
     .filters-grid label {
       margin-top: 0;
       font-size: 0.82rem;
     }
+
     .filters-grid select, .filters-grid input {
       margin-top: 4px;
     }
+
     .summary-bar {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid #e2e8f0;
     }
+
     .action-btns {
       display: flex;
       gap: 8px;
     }
+
     .pdf-btn, .export-btn {
       width: auto;
       padding: 7px 12px;
@@ -203,25 +263,28 @@
       color: #ffffff;
       cursor: pointer;
     }
+
     .pdf-btn { background: #dc2626; }
     .export-btn { background: #16a34a; }
+
     .small-btn {
       width: auto;
       padding: 6px 12px;
       margin-top: 0;
       font-size: 0.85rem;
-      font-weight: 600;
       background: #e2e8f0;
       color: var(--text);
       border: 1px solid var(--border);
       cursor: pointer;
     }
+
     .course-group {
       margin-top: 14px;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       overflow: hidden;
     }
+
     .course-group-header {
       background: #f8fafc;
       padding: 8px 12px;
@@ -230,27 +293,32 @@
       font-size: 0.9rem;
       border-bottom: 1px solid #e2e8f0;
     }
+
     .table-wrap {
       overflow-x: auto;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.84rem;
+      font-size: 0.85rem;
     }
+
     th, td {
       padding: 8px 10px;
       border-bottom: 1px solid #f1f5f9;
       text-align: left;
       white-space: nowrap;
     }
+
     th {
       background: #f8fafc;
       color: #334155;
       font-weight: 600;
     }
+
     @media print {
-      .nav-tabs, .filters-grid, .action-btns, #refreshBtn, #lockScreen {
+      .nav-tabs, .filters-grid, .action-btns, .small-btn {
         display: none !important;
       }
       body { background: #ffffff; padding: 0; }
@@ -266,8 +334,8 @@
     </div>
 
     <div class="nav-tabs">
-      <button type="button" class="nav-btn active" id="tabSign" onclick="switchTab('sign')">Sign Attendance</button>
-      <button type="button" class="nav-btn" id="tabRecords" onclick="switchTab('records')">Admin Records</button>
+      <button type="button" id="tabSign" class="nav-btn active" onclick="switchTab('sign')">Sign Attendance</button>
+      <button type="button" id="tabRecords" class="nav-btn" onclick="switchTab('records')">Admin Records</button>
     </div>
 
     <div id="signView">
@@ -277,25 +345,28 @@
       </div>
 
       <div class="card">
-        <h3 style="margin: 0 0 8px 0; font-size: 1.05rem; color: var(--primary);">Weekly Lecture Timetable</h3>
-        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--muted);">Attendance opens automatically during scheduled lecture windows.</p>
+        <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: var(--primary);">Weekly Lecture Timetable</h3>
+        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--muted);">Attendance opens automatically during scheduled lecture hours.</p>
         <div id="timetableList"></div>
+        <div class="emblem-box">
+          <img src="bg-electrical.jpg" alt="Diploma in Electrical Engineering Emblem" />
+        </div>
       </div>
     </div>
 
     <div id="recordsView" style="display: none;">
       <div class="card" id="lockScreen">
         <h3 style="margin: 0 0 8px 0; color: var(--primary);">Admin Access</h3>
-        <p style="margin: 0 0 12px 0; font-size: 0.88rem; color: var(--muted);">Enter the admin PIN to view, filter, and export attendance records.</p>
-        <input type="password" id="pinInput" placeholder="Enter PIN">
+        <p style="margin: 0 0 12px 0; font-size: 0.88rem; color: var(--muted);">Enter the admin PIN to view and export attendance records.</p>
+        <input type="password" id="pinInput" placeholder="Enter Admin PIN" />
         <button type="button" class="primary-btn" onclick="unlockRecords()">Unlock Records</button>
-        <div id="pinError" class="error" style="margin-top: 8px; font-size: 0.85rem;"></div>
+        <div id="pinError" class="error" style="margin-top: 8px; font-size: 0.88rem;"></div>
       </div>
 
       <div class="card" id="unlockedDashboard" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary);">Attendance Records</h3>
-          <button type="button" class="small-btn" id="refreshBtn" onclick="fetchRecords()">Refresh</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+          <h3 style="margin: 0; font-size: 1.05rem; color: var(--primary);">Attendance Records</h3>
+          <button type="button" id="refreshBtn" class="small-btn" onclick="fetchRecords()">Refresh</button>
         </div>
 
         <div class="filters-grid">
@@ -318,16 +389,16 @@
             </select>
           </div>
           <div>
-            <label for="searchStudent">Search ID / Name</label>
-            <input type="text" id="searchStudent" placeholder="Index or name..." oninput="applyFilters()">
+            <label for="searchStudent">Search Student</label>
+            <input type="text" id="searchStudent" placeholder="ID or Name..." oninput="applyFilters()" />
           </div>
         </div>
 
         <div class="summary-bar">
-          <span id="recordCount" style="font-size: 0.88rem; font-weight: 600; color: var(--muted);">Loading records...</span>
+          <span id="recordCount" style="font-size: 0.88rem; font-weight: 600; color: var(--muted);">0 record(s)</span>
           <div class="action-btns">
-            <button type="button" class="pdf-btn" onclick="window.print()">Download PDF</button>
-            <button type="button" class="export-btn" onclick="exportFilteredCSV()">Download CSV</button>
+            <button type="button" class="pdf-btn" onclick="window.print()">Print / PDF</button>
+            <button type="button" class="export-btn" onclick="exportFilteredCSV()">Export CSV</button>
           </div>
         </div>
 
@@ -338,17 +409,28 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiINwPkR6gZnfiwRZzP-GnsoPtZJdYdd-fqdA9ighdMQXovN3UrZ2rxXDIv46WJNDd/exec";
+    const SHEET_ID = "1ceQVIunf_60Wfokkly-yAsquGawb7ZPjqAoPeMCMmoM";
     const ADMIN_PIN = "7070";
     const CAMPUS_LAT = 4.9095164;
     const CAMPUS_LNG = -1.7844028;
     const MAX_DISTANCE_METERS = 500;
 
     const SCHEDULE = [
-      { day: "Monday", start: "08:00", end: "10:00", code: "MECH201", name: "Strength of Materials", lecturer: "Dr. K. Mensah", venue: "Eng Block A - Room 102" },
-      { day: "Tuesday", start: "10:30", end: "12:30", code: "ELEC203", name: "Circuit Theory II", lecturer: "Ing. A. Boateng", venue: "Eng Block B - Lab 1" },
-      { day: "Wednesday", start: "14:00", end: "16:00", code: "MATH205", name: "Engineering Mathematics III", lecturer: "Prof. E. Owusu", venue: "Lecture Theatre 2" },
-      { day: "Thursday", start: "09:00", end: "11:00", code: "CIVL207", name: "Fluid Mechanics", lecturer: "Dr. S. Appiah", venue: "Eng Block A - Room 204" },
-      { day: "Friday", start: "13:00", end: "15:00", code: "COMP209", name: "Numerical Methods", lecturer: "Mr. D. Tetteh", venue: "ICT Lab 3" }
+      // Monday
+      { day: "Monday", start: "08:00", end: "10:00", code: "MATH111", name: "ALGEBRA", venue: "ODURO BLOCK LF4", lecturer: "MRS. REBECCA NDUBA ARHIN", group: "Group B" },
+      { day: "Monday", start: "10:00", end: "12:00", code: "BEEE103", name: "ENGINEERING DRAWING I", venue: "ODURO BLOCK SF2", lecturer: "MR. KINGSLEY NUNOO", group: "Group B" },
+      { day: "Monday", start: "14:00", end: "16:00", code: "PCOS101", name: "COMMUNICATION SKILLS I", venue: "AUDITORIUM", lecturer: "FLORA OHENE ASANTE", group: "Group B" },
+
+      // Tuesday
+      { day: "Tuesday", start: "06:00", end: "08:00", code: "BEEE109", name: "ENGINEERING MECHANICS", venue: "ODURO BLOCK LF1", lecturer: "MR. CARIFA AMOUZOU", group: "Group B" },
+      { day: "Tuesday", start: "14:00", end: "16:00", code: "PCLT101", name: "COMPUTER LITERACY", venue: "AUDITORIUM", lecturer: "MISS ANGELA ABA OTCHERE", group: "Group B" },
+
+      // Wednesday
+      { day: "Wednesday", start: "14:00", end: "16:00", code: "BEEE101", name: "ELECTRONICS I", venue: "ODURO BLOCK FF2", lecturer: "MR. ISAAC AYIPEH MENSAH", group: "Group B" },
+
+      // Thursday
+      { day: "Thursday", start: "08:00", end: "10:00", code: "PAS111", name: "AFRICAN STUDIES", venue: "AUDITORIUM", lecturer: "MR. PETER YANKSON", group: "Group A" },
+      { day: "Thursday", start: "10:00", end: "12:00", code: "BEEE107", name: "APPLIED ELECTRICITY", venue: "ODURO BLOCK TF2", lecturer: "MR. DACOSTA ASANTE", group: "Group B" }
     ];
 
     const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -408,14 +490,23 @@
 
     function renderWeeklySchedule() {
       const target = document.getElementById("timetableList");
-      target.innerHTML = SCHEDULE.map(item => `
-        <div class="schedule-item">
-          <div class="time-col">${item.day}<br>${item.start} - ${item.end}</div>
-          <div class="info-col">
-            <strong>${item.code} - ${item.name}</strong><br>
-            <span style="color: var(--muted);">${item.lecturer} | ${item.venue}</span>
+      const grouped = {};
+      SCHEDULE.forEach(item => {
+        if (!grouped[item.day]) grouped[item.day] = [];
+        grouped[item.day].push(item);
+      });
+
+      target.innerHTML = Object.keys(grouped).map(day => `
+        <div class="schedule-day">${day}</div>
+        ${grouped[day].map(item => `
+          <div class="schedule-item">
+            <div class="time-col">${item.start} - ${item.end}</div>
+            <div class="info-col">
+              <strong>${item.code} - ${item.name}</strong> (${item.group})<br />
+              <span style="color: var(--muted);">${item.venue} &bull; ${item.lecturer}</span>
+            </div>
           </div>
-        </div>
+        `).join("")}
       `).join("");
     }
 
@@ -424,124 +515,120 @@
       document.getElementById("liveClock").textContent = now.toLocaleString();
 
       const active = getActiveLecture(now);
-      const renderKey = active ? `${active.day}-${active.code}` : `CLOSED-${DAYS[now.getDay()]}`;
+      const renderKey = active
+        ? `${active.day}-${active.start}-${active.code}-${active.group}`
+        : `CLOSED-${DAYS[now.getDay()]}`;
+
       if (renderKey === lastRenderedKey) return;
       lastRenderedKey = renderKey;
 
-      const badge = document.getElementById("statusBadge");
-      const content = document.getElementById("activeContent");
+      const badgeEl = document.getElementById("statusBadge");
+      const contentEl = document.getElementById("activeContent");
 
       if (!active) {
-        badge.className = "badge badge-closed";
-        badge.textContent = "Attendance Closed";
-        content.innerHTML = `
-          <p style="margin: 0; color: var(--muted);">
-            There is no active engineering lecture scheduled right now (${DAYS[now.getDay()]}).
-            Please check the timetable below for upcoming sessions.
-          </p>
+        badgeEl.innerHTML = `<span class="badge badge-closed">Attendance Closed</span>`;
+        contentEl.innerHTML = `
+          <div class="lecture-title">No Scheduled Lecture Right Now</div>
+          <div class="lecture-meta">Check the weekly timetable below for upcoming class times.</div>
         `;
         return;
       }
 
-      badge.className = "badge badge-open";
-      badge.textContent = "Attendance Open";
-      content.innerHTML = `
-        <div class="lecture-box">
-          <div class="lecture-title">${active.code} - ${active.name}</div>
-          <div class="lecture-meta">
-            <strong>Day:</strong> ${active.day} (${active.start} - ${active.end})<br>
-            <strong>Lecturer:</strong> ${active.lecturer}<br>
-            <strong>Venue:</strong> ${active.venue}
-          </div>
-          <div class="geo-notice">Location check verifies you are within ${MAX_DISTANCE_METERS}m of campus when submitting.</div>
-        </div>
+      badgeEl.innerHTML = `<span class="badge badge-open">Attendance Open</span>`;
+      contentEl.innerHTML = `
+        <div class="lecture-title">${active.code} - ${active.name} (${active.group})</div>
+        <div class="lecture-meta">${active.start} - ${active.end} &bull; ${active.venue} &bull; ${active.lecturer}</div>
+        <form id="attendanceForm" onsubmit="submitAttendance(event)">
+          <label for="studentId">Student ID</label>
+          <input type="text" id="studentId" required placeholder="Enter Student ID" />
 
-        <form id="attendanceForm" onsubmit="handleAttendanceSubmit(event)">
-          <label for="groupSelect">Group</label>
-          <select id="groupSelect" required>
-            <option value="">Select Group</option>
-            <option value="Group A">Group A</option>
-            <option value="Group B">Group B</option>
-          </select>
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" required placeholder="Enter Full Name" />
 
-          <label for="studentIdInput">Student ID / Index Number</label>
-          <input type="text" id="studentIdInput" placeholder="e.g. ENG/24/001" required>
-
-          <label for="fullNameInput">Full Name</label>
-          <input type="text" id="fullNameInput" placeholder="Enter your full name" required>
-
-          <button type="submit" class="primary-btn" id="submitBtn">Mark Attendance</button>
-          <div id="statusMessage"></div>
+          <button type="submit" id="submitBtn" class="primary-btn">Submit Attendance</button>
         </form>
+        <div class="geo-notice">Location verification is required when submitting attendance.</div>
+        <div id="submitStatus" class="status-msg"></div>
       `;
     }
 
-    function handleAttendanceSubmit(event) {
-      event.preventDefault();
+    function submitAttendance(e) {
+      e.preventDefault();
       const now = new Date();
       const active = getActiveLecture(now);
-      const msgEl = document.getElementById("statusMessage");
+      const statusEl = document.getElementById("submitStatus");
       const submitBtn = document.getElementById("submitBtn");
 
       if (!active) {
-        msgEl.className = "error";
-        msgEl.textContent = "Lecture window has closed.";
+        statusEl.className = "status-msg error";
+        statusEl.textContent = "This lecture session has ended.";
         return;
       }
 
       if (!navigator.geolocation) {
-        msgEl.className = "error";
-        msgEl.textContent = "Geolocation is not supported on this device.";
+        statusEl.className = "status-msg error";
+        statusEl.textContent = "Geolocation is not supported by your browser.";
         return;
       }
 
       submitBtn.disabled = true;
-      msgEl.className = "";
-      msgEl.textContent = "Verifying campus location...";
+      statusEl.className = "status-msg";
+      statusEl.textContent = "Checking your location...";
 
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
-          const dist = getDistanceMeters(pos.coords.latitude, pos.coords.longitude, CAMPUS_LAT, CAMPUS_LNG);
-          if (dist > MAX_DISTANCE_METERS) {
-            msgEl.className = "error";
-            msgEl.textContent = `You are ${Math.round(dist)}m away from campus (max ${MAX_DISTANCE_METERS}m allowed).`;
+          const distance = getDistanceMeters(
+            pos.coords.latitude,
+            pos.coords.longitude,
+            CAMPUS_LAT,
+            CAMPUS_LNG
+          );
+
+          if (distance > MAX_DISTANCE_METERS) {
+            statusEl.className = "status-msg error";
+            statusEl.textContent = `You are outside the allowed lecture zone (${Math.round(distance)}m away).`;
             submitBtn.disabled = false;
             return;
           }
 
           const payload = {
+            sheetId: SHEET_ID,
+            date: now.toISOString().slice(0, 10),
+            time: now.toTimeString().slice(0, 8),
             day: active.day,
             courseCode: active.code,
             courseName: active.name,
-            lecturer: active.lecturer,
+            group: active.group,
             venue: active.venue,
-            group: document.getElementById("groupSelect").value,
-            studentId: document.getElementById("studentIdInput").value.trim(),
-            fullName: document.getElementById("fullNameInput").value.trim()
+            studentId: document.getElementById("studentId").value.trim(),
+            fullName: document.getElementById("fullName").value.trim(),
+            distanceMeters: Math.round(distance)
           };
 
-          msgEl.textContent = "Submitting attendance...";
           try {
-            await fetch(SCRIPT_URL, {
+            statusEl.textContent = "Saving attendance...";
+            const res = await fetch(SCRIPT_URL, {
               method: "POST",
-              mode: "no-cors",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
               body: JSON.stringify(payload)
             });
-
-            msgEl.className = "success";
-            msgEl.textContent = `Attendance recorded for ${payload.fullName} (${payload.studentId}).`;
-            document.getElementById("attendanceForm").reset();
+            const data = await res.json();
+            if (data && data.status === "success") {
+              statusEl.className = "status-msg success";
+              statusEl.textContent = "Attendance recorded successfully.";
+              document.getElementById("attendanceForm").reset();
+            } else {
+              throw new Error(data && data.message ? data.message : "Failed to save attendance.");
+            }
           } catch (err) {
-            msgEl.className = "error";
-            msgEl.textContent = "Failed to submit attendance. Please check your connection.";
+            statusEl.className = "status-msg error";
+            statusEl.textContent = `Error: ${err && err.message ? err.message : String(err)}`;
           } finally {
             submitBtn.disabled = false;
           }
         },
-        () => {
-          msgEl.className = "error";
-          msgEl.textContent = "Location permission denied. Please allow location access to sign attendance.";
+        (geoErr) => {
+          statusEl.className = "status-msg error";
+          statusEl.textContent = `Location error: ${geoErr.message}`;
           submitBtn.disabled = false;
         },
         { enableHighAccuracy: true, timeout: 10000 }
@@ -550,21 +637,21 @@
 
     function unlockRecords() {
       const pin = document.getElementById("pinInput").value.trim();
-      const errEl = document.getElementById("pinError");
+      const pinError = document.getElementById("pinError");
       if (pin === ADMIN_PIN) {
         isUnlocked = true;
-        errEl.textContent = "";
+        pinError.textContent = "";
         document.getElementById("lockScreen").style.display = "none";
         document.getElementById("unlockedDashboard").style.display = "block";
         fetchRecords();
       } else {
-        errEl.textContent = "Incorrect PIN.";
+        pinError.textContent = "Incorrect PIN.";
       }
     }
 
     async function fetchRecords() {
       const countEl = document.getElementById("recordCount");
-      const container = document.getElementById("recordsContainer");
+          const container = document.getElementById("recordsContainer");
       const refreshBtn = document.getElementById("refreshBtn");
 
       refreshBtn.disabled = true;
@@ -572,7 +659,7 @@
       container.innerHTML = "";
 
       try {
-        const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
+        const res = await fetch(`${SCRIPT_URL}?sheetId=${encodeURIComponent(SHEET_ID)}&t=${Date.now()}`);
         const data = await res.json();
         if (!data || data.status !== "success" || !Array.isArray(data.records)) {
           throw new Error("Invalid response format");
@@ -581,14 +668,13 @@
         populateFilterOptions(allRecords);
         applyFilters();
       } catch (err) {
-  countEl.textContent = "0 record(s)";
-  container.innerHTML = `
-    <div class="error" style="margin-top: 12px;">
-      Unable to connect: ${err && err.message ? err.message : String(err)}
-    </div>
-  `;
-} finally {
-   
+        countEl.textContent = "0 record(s)";
+        container.innerHTML = `
+          <div class="error" style="margin-top: 12px;">
+            Unable to connect: ${err && err.message ? err.message : String(err)}
+          </div>
+        `;
+      } finally {
         refreshBtn.disabled = false;
       }
     }
@@ -608,7 +694,7 @@
 
       courseSelect.innerHTML = `<option value="ALL">All Courses</option>` +
         courses.map(c => `<option value="${c}">${c}</option>`).join("");
-            weekSelect.innerHTML = `<option value="ALL">All Weeks</option>` +
+      weekSelect.innerHTML = `<option value="ALL">All Weeks</option>` +
         weeks.map(w => `<option value="${w}">${w}</option>`).join("");
       daySelect.innerHTML = `<option value="ALL">All Days</option>` +
         days.map(d => `<option value="${d}">${d}</option>`).join("");
