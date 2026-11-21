@@ -7,12 +7,15 @@
   <style>
     :root {
       --primary: #0f294a;
-      --accent: #1d4ed8;
+      --accent: #15803d;
+      --accent-dark: #166534;
       --bg: #0b192c;
       --card: #ffffff;
       --text: #1e293b;
       --muted: #64748b;
       --border: #cbd5e1;
+      --found-bg: #ecfdf5;
+      --found-border: #6ee7b7;
     }
 
     * {
@@ -144,12 +147,6 @@
       margin-top: 4px;
     }
 
-    .geo-notice {
-      font-size: 0.8rem;
-      color: #475569;
-      margin-top: 8px;
-    }
-
     label {
       display: block;
       margin-top: 12px;
@@ -157,18 +154,114 @@
       font-weight: 600;
     }
 
+    .sub-hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
     input, select, button {
       width: 100%;
-      padding: 10px 12px;
-      margin-top: 4px;
+      padding: 11px 12px;
+      margin-top: 6px;
       border-radius: 8px;
       border: 1px solid #cbd5e1;
       font-size: 0.95rem;
     }
 
+    input.id-input {
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
     input:focus, select:focus {
       outline: none;
       border-color: var(--accent);
+    }
+
+    .student-found-card {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      background: var(--found-bg);
+      border: 1.5px solid var(--found-border);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .found-check {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: 9px;
+      background: var(--accent);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .found-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent-dark);
+      text-transform: uppercase;
+    }
+
+    .found-name {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+
+    .found-prog {
+      font-size: 0.84rem;
+      color: #334155;
+      margin-top: 2px;
+    }
+
+    .edit-link-btn {
+      background: none;
+      border: none;
+      padding: 4px 0 0 0;
+      margin-top: 4px;
+      width: auto;
+      font-size: 0.8rem;
+      color: #475569;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .loc-pill {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+
+    .loc-pill.ok {
+      background: #ecfdf5;
+      color: #166534;
+      border-color: #a7f3d0;
+    }
+
+    .loc-pill.warn {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #fecaca;
     }
 
     button.primary-btn {
@@ -186,7 +279,7 @@
     }
 
     .status-msg {
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 0.9rem;
       font-weight: 600;
     }
@@ -413,6 +506,9 @@
     const CAMPUS_LNG = -1.7844028;
     const MAX_DISTANCE_METERS = 500;
 
+    // Optional local/fallback roster map: { "21009023": { name: "YIADOM, Frederick Boakye", programme: "DIPLOMA IN ELECTRICAL ENGINEERING" } }
+    const LOCAL_ROSTER = {};
+
     const SCHEDULE = [
       // Monday
       { day: "Monday", start: "08:00", end: "10:00", code: "MATH111", name: "ALGEBRA", venue: "ODURO BLOCK LF4", lecturer: "MRS. REBECCA NDUBA ARHIN", group: "Group B" },
@@ -434,6 +530,10 @@
     const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     let allRecords = [];
     let filteredRecords = [];
+    let rosterMap = { ...LOCAL_ROSTER };
+    let rosterLoaded = false;
+    let manualEditMode = false;
+    let geoState = { status: "checking", accuracy: null, distance: null, coords: null, message: "Checking campus location..." };
     let isUnlocked = false;
     let lastRenderedKey = "";
 
@@ -508,6 +608,132 @@
       `).join("");
     }
 
+    async function loadRosterIfNeeded() {
+      if (rosterLoaded) return;
+      rosterLoaded = true;
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=roster&sheetId=${encodeURIComponent(SHEET_ID)}&t=${Date.now()}`);
+        const data = await res.json();
+        if (data && Array.isArray(data.students)) {
+          data.students.forEach(s => {
+            const id = String(s.studentId || s.id || "").trim();
+            if (id) {
+              rosterMap[id] = {
+                name: String(s.fullName || s.name || "").trim(),
+                programme: String(s.programme || s.program || s.group || "").trim()
+              };
+            }
+          });
+          handleStudentIdInput();
+        }
+      } catch (_) {
+        // Fallback smoothly to manual entry if roster endpoint isn't configured
+      }
+    }
+
+    function updateLocationBadge() {
+      const pill = document.getElementById("locPill");
+      if (!pill) return;
+      pill.className = "loc-pill";
+      if (geoState.status === "ok") {
+        pill.classList.add("ok");
+        pill.innerHTML = `<span>&#9678;</span><span>Location confirmed &mdash; accurate to &plusmn;${Math.round(geoState.accuracy)}m</span>`;
+      } else if (geoState.status === "warn") {
+        pill.classList.add("warn");
+        pill.innerHTML = `<span>&#9888;</span><span>${geoState.message}</span>`;
+      } else {
+        pill.innerHTML = `<span>&#9678;</span><span>${geoState.message}</span>`;
+      }
+    }
+
+    function refreshGeolocation() {
+      if (!navigator.geolocation) {
+        geoState = { status: "warn", accuracy: null, distance: null, coords: null, message: "Geolocation is not supported on this device." };
+        updateLocationBadge();
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const dist = getDistanceMeters(
+            pos.coords.latitude,
+            pos.coords.longitude,
+            CAMPUS_LAT,
+            CAMPUS_LNG
+          );
+          if (dist > MAX_DISTANCE_METERS) {
+            geoState = {
+              status: "warn",
+              accuracy: pos.coords.accuracy,
+              distance: dist,
+              coords: pos.coords,
+              message: `Outside lecture zone (${Math.round(dist)}m away; accuracy &plusmn;${Math.round(pos.coords.accuracy)}m)`
+            };
+          } else {
+            geoState = {
+              status: "ok",
+              accuracy: pos.coords.accuracy,
+              distance: dist,
+              coords: pos.coords,
+              message: `Location confirmed — accurate to ±${Math.round(pos.coords.accuracy)}m`
+            };
+          }
+          updateLocationBadge();
+        },
+        (err) => {
+          geoState = {
+            status: "warn",
+            accuracy: null,
+            distance: null,
+            coords: null,
+            message: `Location check: ${err.message}`
+          };
+          updateLocationBadge();
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
+      );
+    }
+
+    function enableManualEdit() {
+      manualEditMode = true;
+      const foundBox = document.getElementById("studentFoundBox");
+      const manualWrap = document.getElementById("manualNameWrap");
+       const manualWrap = document.getElementById("manualNameWrap");
+      const nameInput = document.getElementById("fullName");
+      if (foundBox) foundBox.style.display = "none";
+      if (manualWrap) manualWrap.style.display = "block";
+      if (nameInput) nameInput.focus();
+    }
+
+    function handleStudentIdInput() {
+      const idInput = document.getElementById("studentId");
+      const foundBox = document.getElementById("studentFoundBox");
+      const manualWrap = document.getElementById("manualNameWrap");
+      const nameInput = document.getElementById("fullName");
+      if (!idInput || !foundBox || !manualWrap || !nameInput) return;
+
+      const rawId = idInput.value.trim();
+      const match = rosterMap[rawId];
+
+      if (match && match.name && !manualEditMode) {
+        nameInput.value = match.name;
+        manualWrap.style.display = "none";
+        foundBox.style.display = "flex";
+        foundBox.innerHTML = `
+          <div class="found-check">&#10003;</div>
+          <div style="flex: 1;">
+            <div class="found-tag">Student Found</div>
+            <div class="found-name">${match.name}</div>
+            ${match.programme ? `<div class="found-prog">${match.programme}</div>` : ""}
+            <button type="button" class="edit-link-btn" onclick="enableManualEdit()">Not you, or details wrong? Edit manually</button>
+          </div>
+        `;
+      } else {
+        foundBox.style.display = "none";
+        manualWrap.style.display = "block";
+      }
+    }
+
     function renderUI() {
       const now = new Date();
       document.getElementById("liveClock").textContent = now.toLocaleString();
@@ -519,6 +745,7 @@
 
       if (renderKey === lastRenderedKey) return;
       lastRenderedKey = renderKey;
+      manualEditMode = false;
 
       const badgeEl = document.getElementById("statusBadge");
       const contentEl = document.getElementById("activeContent");
@@ -537,17 +764,27 @@
         <div class="lecture-title">${active.code} - ${active.name} (${active.group})</div>
         <div class="lecture-meta">${active.start} - ${active.end} &bull; ${active.venue} &bull; ${active.lecturer}</div>
         <form id="attendanceForm" onsubmit="submitAttendance(event)">
-          <label for="studentId">Student ID</label>
-          <input type="text" id="studentId" required placeholder="Enter Student ID" />
+          <label for="studentId">Enter your Student ID</label>
+          <div class="sub-hint">Type your Student ID to check your details</div>
+          <input type="text" id="studentId" class="id-input" required placeholder="e.g. 21009023" oninput="manualEditMode = false; handleStudentIdInput();" />
 
-          <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" required placeholder="Enter Full Name" />
+          <div id="studentFoundBox" class="student-found-card" style="display: none;"></div>
 
-          <button type="submit" id="submitBtn" class="primary-btn">Submit Attendance</button>
+          <div id="manualNameWrap">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" required placeholder="Enter Full Name" />
+          </div>
+
+          <div id="locPill" class="loc-pill">&#9678; Checking campus location...</div>
+
+          <button type="submit" id="submitBtn" class="primary-btn">Mark Attendance</button>
         </form>
-        <div class="geo-notice">Location verification is required when submitting attendance.</div>
         <div id="submitStatus" class="status-msg"></div>
       `;
+
+      updateLocationBadge();
+      refreshGeolocation();
+      loadRosterIfNeeded();
     }
 
     function submitAttendance(e) {
@@ -571,7 +808,7 @@
 
       submitBtn.disabled = true;
       statusEl.className = "status-msg";
-      statusEl.textContent = "Checking your location...";
+      statusEl.textContent = "Verifying your location...";
 
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -582,12 +819,26 @@
             CAMPUS_LNG
           );
 
+          geoState = {
+            status: distance > MAX_DISTANCE_METERS ? "warn" : "ok",
+            accuracy: pos.coords.accuracy,
+            distance,
+            coords: pos.coords,
+            message: distance > MAX_DISTANCE_METERS
+              ? `Outside lecture zone (${Math.round(distance)}m away)`
+              : `Location confirmed — accurate to ±${Math.round(pos.coords.accuracy)}m`
+          };
+          updateLocationBadge();
+
           if (distance > MAX_DISTANCE_METERS) {
             statusEl.className = "status-msg error";
             statusEl.textContent = `You are outside the allowed lecture zone (${Math.round(distance)}m away).`;
             submitBtn.disabled = false;
             return;
           }
+
+          const studentIdVal = document.getElementById("studentId").value.trim();
+          const fullNameVal = document.getElementById("fullName").value.trim();
 
           const payload = {
             sheetId: SHEET_ID,
@@ -598,9 +849,10 @@
             courseName: active.name,
             group: active.group,
             venue: active.venue,
-            studentId: document.getElementById("studentId").value.trim(),
-            fullName: document.getElementById("fullName").value.trim(),
-            distanceMeters: Math.round(distance)
+            studentId: studentIdVal,
+            fullName: fullNameVal,
+            distanceMeters: Math.round(distance),
+            accuracyMeters: Math.round(pos.coords.accuracy)
           };
 
           try {
@@ -613,7 +865,9 @@
             if (data && data.status === "success") {
               statusEl.className = "status-msg success";
               statusEl.textContent = "Attendance recorded successfully.";
+              manualEditMode = false;
               document.getElementById("attendanceForm").reset();
+              handleStudentIdInput();
             } else {
               throw new Error(data && data.message ? data.message : "Failed to save attendance.");
             }
@@ -625,6 +879,14 @@
           }
         },
         (geoErr) => {
+          geoState = {
+            status: "warn",
+            accuracy: null,
+            distance: null,
+            coords: null,
+            message: `Location error: ${geoErr.message}`
+          };
+          updateLocationBadge();
           statusEl.className = "status-msg error";
           statusEl.textContent = `Location error: ${geoErr.message}`;
           submitBtn.disabled = false;
@@ -650,7 +912,7 @@
     async function fetchRecords() {
       const countEl = document.getElementById("recordCount");
       const container = document.getElementById("recordsContainer");
-          const refreshBtn = document.getElementById("refreshBtn");
+      const refreshBtn = document.getElementById("refreshBtn");
 
       refreshBtn.disabled = true;
       countEl.textContent = "Loading records...";
@@ -796,3 +1058,4 @@
   </script>
 </body>
 </html>
+  
