@@ -525,9 +525,9 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiINwPkR6gZnfiwRZzP-GnsoPtZJdYdd-fqdA9ighdMQXovN3UrZ2rxXDIv46WJNDd/exec";
     const SHEET_ID = "1ceQVIunf_60Wfokkly-yAsquGawb7ZPjqAoPeMCMmoM";
     const ADMIN_PIN = "7070";
-    const CAMPUS_LAT = 4.9095164;
-    const CAMPUS_LNG = -1.7844028;
-    const MAX_DISTANCE_METERS = 500;
+    const CAMPUS_LAT = 4.9096891;
+    const CAMPUS_LNG = -1.7563048;
+    const MAX_DISTANCE_METERS = 1200;
 
     // Optional local fallback: { "21009023": { name: "YIADOM, Frederick Boakye", programme: "DIPLOMA IN ELECTRICAL ENGINEERING", course: "BEEE107 - APPLIED ELECTRICITY" } }
     const LOCAL_ROSTER = {};
@@ -684,7 +684,7 @@
 
         if (nameInput) {
           nameInput.style.display = "none";
-              nameInput.value = student.name;
+             nameInput.value = student.name;
         }
         if (courseInput) {
           courseInput.style.display = "none";
@@ -829,7 +829,7 @@
 
           if (distance > MAX_DISTANCE_METERS) {
             statusEl.className = "status-msg error";
-            statusEl.textContent = `You are outside the allowed lecture zone (${Math.round(distance)}m away).`;
+            statusEl.textContent = `You are outside the campus attendance zone (${Math.round(distance)}m away).`;
             submitBtn.disabled = false;
             return;
           }
