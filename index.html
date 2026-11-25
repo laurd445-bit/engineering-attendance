@@ -543,7 +543,9 @@
       { day: "Tuesday", start: "14:00", end: "16:00", code: "PCLT101", name: "COMPUTER LITERACY", venue: "AUDITORIUM", lecturer: "MISS ANGELA ABA OTCHERE", group: "Group B" },
 
       // Wednesday
+      { day: "Wednesday", start: "12:00", end: "14:00", code: "BEEE105", name: "ENGINEERING LABORATORY", venue: "LABORATORY", lecturer: "TBA", group: "Group B" },
       { day: "Wednesday", start: "14:00", end: "16:00", code: "BEEE101", name: "ELECTRONICS I", venue: "ODURO BLOCK FF2", lecturer: "MR. ISAAC AYIPEH MENSAH", group: "Group B" },
+      { day: "Wednesday", start: "16:00", end: "18:00", code: "PCOS101", name: "COMMUNICATION SKILLS", venue: "AUDITORIUM", lecturer: "FLORA OHENE ASANTE", group: "Group B" },
 
       // Thursday
       { day: "Thursday", start: "08:00", end: "10:00", code: "PAS111", name: "AFRICAN STUDIES", venue: "AUDITORIUM", lecturer: "MR. PETER YANKSON", group: "Group A" },
@@ -675,7 +677,7 @@
 
       if (student && student.name && !manualOverride) {
         nameBox.textContent = student.name;
-        courseBox.textContent = student.course || activeCourse;
+                courseBox.textContent = student.course || activeCourse;
         progBox.textContent = student.programme || "DIPLOMA IN ELECTRICAL ENGINEERING";
 
         nameBox.style.display = "flex";
@@ -684,7 +686,7 @@
 
         if (nameInput) {
           nameInput.style.display = "none";
-             nameInput.value = student.name;
+          nameInput.value = student.name;
         }
         if (courseInput) {
           courseInput.style.display = "none";
